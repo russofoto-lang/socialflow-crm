@@ -1,5 +1,6 @@
 import { Plus, Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import ContentDetailModal from '../../components/contents/ContentDetailModal.jsx';
 import ContentForm from '../../components/contents/ContentForm.jsx';
 import ContentsTable from '../../components/contents/ContentsTable.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
@@ -17,6 +18,7 @@ export default function ContentsPage() {
   const [filters, setFilters] = useState({});
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState(null);
+  const [selectedContent, setSelectedContent] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState('');
@@ -43,6 +45,7 @@ export default function ContentsPage() {
       await upsertContent({ ...payload, created_by: payload.created_by ?? user.id });
       setShowForm(false);
       setEditing(null);
+      setSelectedContent(null);
       setSuccess(isEdit ? 'Contenuto aggiornato correttamente.' : 'Contenuto creato correttamente.');
       await refresh();
     } catch (err) {
@@ -88,7 +91,8 @@ export default function ContentsPage() {
       {filteredContents.length > 0 ? (
         <ContentsTable
           contents={filteredContents}
-          onEdit={(content) => { setEditing(content); setShowForm(true); }}
+          onOpen={(content) => { setSelectedContent(content); setEditing(null); setShowForm(false); }}
+          onEdit={(content) => { setSelectedContent(content); setEditing(null); setShowForm(false); }}
           onDelete={remove}
           onStatusChange={async (id, status) => {
             setSuccess('');
@@ -105,6 +109,15 @@ export default function ContentsPage() {
       ) : (
         <EmptyState title="Nessun contenuto trovato" description={state.contents.length === 0 ? 'Crea un contenuto e collegalo a un cliente.' : 'Prova a modificare ricerca o filtri.'} />
       )}
+      <ContentDetailModal
+        content={selectedContent}
+        clients={state.clients}
+        saving={saving}
+        userId={user.id}
+        onClose={() => setSelectedContent(null)}
+        onSubmit={save}
+        onUpload={refresh}
+      />
     </div>
   );
 }

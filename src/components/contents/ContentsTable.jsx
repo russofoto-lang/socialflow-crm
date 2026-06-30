@@ -3,7 +3,7 @@ import { formatDate } from '../../utils/date';
 import Badge from '../ui/Badge.jsx';
 import ContentPreview from './ContentPreview.jsx';
 
-export default function ContentsTable({ contents, onEdit, onDelete, onStatusChange }) {
+export default function ContentsTable({ contents, onOpen, onEdit, onDelete, onStatusChange }) {
   return (
     <div className="surface overflow-hidden">
       <div className="overflow-x-auto">
@@ -22,7 +22,7 @@ export default function ContentsTable({ contents, onEdit, onDelete, onStatusChan
           </thead>
           <tbody className="divide-y divide-line">
             {contents.map((content) => (
-              <tr key={content.id} className="transition hover:bg-slate-50">
+              <tr key={content.id} className="cursor-pointer transition hover:bg-brand-50/60" onClick={() => onOpen(content)}>
                 <td className="px-4 py-4">
                   <div className="flex min-w-0 items-center gap-3">
                     <ContentPreview content={content} compact />
@@ -37,7 +37,7 @@ export default function ContentsTable({ contents, onEdit, onDelete, onStatusChan
                 <td className="px-4 py-4"><Badge type="platform" value={content.platform} /></td>
                 <td className="px-4 py-4 text-muted">{formatDate(content.scheduled_date)}</td>
                 <td className="px-4 py-4">
-                  <select className="form-input min-w-40" value={content.status} onChange={(e) => onStatusChange(content.id, e.target.value)}>
+                  <select className="form-input min-w-40" value={content.status} onClick={(e) => e.stopPropagation()} onChange={(e) => onStatusChange(content.id, e.target.value)}>
                     <option value="ideas">Idee</option>
                     <option value="todo">Da fare</option>
                     <option value="in_progress">In lavorazione</option>
@@ -47,8 +47,8 @@ export default function ContentsTable({ contents, onEdit, onDelete, onStatusChan
                 </td>
                 <td className="px-4 py-4"><Badge type="approval" value={content.approval_status} /></td>
                 <td className="px-4 py-4 text-right">
-                  <button className="inline-flex items-center gap-1 text-sm font-bold text-brand-700 hover:underline" onClick={() => onEdit(content)}><Edit3 className="h-3.5 w-3.5" />Modifica</button>
-                  <button className="ml-4 inline-flex items-center gap-1 text-sm font-bold text-rose-700 hover:underline" onClick={() => onDelete(content)}><Trash2 className="h-3.5 w-3.5" />Elimina</button>
+                  <button className="inline-flex items-center gap-1 text-sm font-bold text-brand-700 hover:underline" onClick={(event) => { event.stopPropagation(); onEdit(content); }}><Edit3 className="h-3.5 w-3.5" />Apri</button>
+                  <button className="ml-4 inline-flex items-center gap-1 text-sm font-bold text-rose-700 hover:underline" onClick={(event) => { event.stopPropagation(); onDelete(content); }}><Trash2 className="h-3.5 w-3.5" />Elimina</button>
                 </td>
               </tr>
             ))}
