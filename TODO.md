@@ -18,6 +18,7 @@
 - Preparare template PDF piano editoriale.
 - Aggiungere piccole preferenze UI.
 - Rendere i feedback temporanei o dismissible.
+- Valutare una vista compatta/densa per tabelle con molti contenuti.
 
 ## Futuro
 - AI Assistant per idee e copy.

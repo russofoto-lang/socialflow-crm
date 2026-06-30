@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
-import { buildMonthDays } from '../../utils/date';
+import { buildMonthDays, formatDate } from '../../utils/date';
 import Badge from '../ui/Badge.jsx';
 
 export default function CalendarMonthView({ contents, date = new Date(), onDayClick, onContentClick }) {
@@ -20,7 +20,7 @@ export default function CalendarMonthView({ contents, date = new Date(), onDayCl
       <div className="hidden grid-cols-7 border-b border-line bg-slate-50 text-center text-xs font-bold uppercase text-muted sm:grid">
         {['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].map((day) => <div key={day} className="py-2">{day}</div>)}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-7">
+      <div className="hidden grid-cols-1 sm:grid sm:grid-cols-7">
         {month.days.map((day) => {
           const dayContents = byDate[day.key] ?? [];
           return (
@@ -45,7 +45,7 @@ export default function CalendarMonthView({ contents, date = new Date(), onDayCl
                   >
                     <strong className="block truncate">{content.title}</strong>
                     <span className="block truncate text-muted">{content.clients?.name}</span>
-                    <span className="mt-1 block"><Badge value={content.status} /></span>
+                    <span className="mt-1 flex flex-wrap gap-1"><Badge type="platform" value={content.platform} /><Badge value={content.status} /></span>
                   </span>
                 ))}
                 {day.inMonth && dayContents.length === 0 && <span className="mt-3 text-xs text-slate-400">Nessun contenuto</span>}
@@ -53,6 +53,26 @@ export default function CalendarMonthView({ contents, date = new Date(), onDayCl
             </button>
           );
         })}
+      </div>
+      <div className="grid gap-2 p-3 sm:hidden">
+        {contents.filter((content) => content.scheduled_date).length === 0 && (
+          <div className="rounded-lg border border-dashed border-slate-300 p-6 text-center text-sm text-muted">Nessun contenuto programmato.</div>
+        )}
+        {contents.filter((content) => content.scheduled_date).map((content) => (
+          <button
+            key={content.id}
+            className="rounded-lg border border-line bg-white p-3 text-left shadow-sm"
+            onClick={() => onContentClick?.(content)}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-black">{content.title}</p>
+                <p className="mt-1 text-xs text-muted">{formatDate(content.scheduled_date)} - {content.clients?.name}</p>
+              </div>
+              <Badge type="platform" value={content.platform} />
+            </div>
+          </button>
+        ))}
       </div>
     </div>
   );

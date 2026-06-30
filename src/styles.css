@@ -50,3 +50,7 @@ textarea {
 .section-title {
   @apply text-base font-bold text-ink;
 }
+
+.premium-card {
+  @apply rounded-lg border border-line bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-soft;
+}

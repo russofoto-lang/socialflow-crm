@@ -1,6 +1,16 @@
 import { Link } from 'react-router-dom';
 import Badge from '../ui/Badge.jsx';
 
+function initials(name = '') {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase() || 'CL';
+}
+
 export default function ClientsTable({ clients, onEdit, onDelete }) {
   return (
     <div className="surface overflow-hidden">
@@ -20,8 +30,15 @@ export default function ClientsTable({ clients, onEdit, onDelete }) {
             {clients.map((client) => (
               <tr key={client.id} className="align-top transition hover:bg-slate-50">
                 <td className="px-4 py-4">
-                  <Link className="font-bold text-brand-700 hover:underline" to={`/admin/clienti/${client.id}`}>{client.name}</Link>
-                  {client.notes && <p className="mt-1 line-clamp-1 text-xs text-muted">{client.notes}</p>}
+                  <div className="flex items-start gap-3">
+                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-50 text-sm font-black text-brand-700 ring-1 ring-brand-100">
+                      {initials(client.name)}
+                    </div>
+                    <div className="min-w-0">
+                      <Link className="font-bold text-brand-700 hover:underline" to={`/admin/clienti/${client.id}`}>{client.name}</Link>
+                      {client.notes && <p className="mt-1 line-clamp-1 text-xs text-muted">{client.notes}</p>}
+                    </div>
+                  </div>
                 </td>
                 <td className="px-4 py-4 font-medium">{client.contact_name || '-'}</td>
                 <td className="px-4 py-4 text-muted">{client.email || '-'}<br />{client.phone || '-'}</td>

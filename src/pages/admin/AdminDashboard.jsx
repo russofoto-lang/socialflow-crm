@@ -1,7 +1,8 @@
-import { CalendarDays, CheckCircle2, Clock3, Users } from 'lucide-react';
+import { CalendarDays, CheckCircle2, Clock3, KanbanSquare, Plus, Users, WalletCards } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Badge from '../../components/ui/Badge.jsx';
+import ContentPreview from '../../components/contents/ContentPreview.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
 import ErrorState from '../../components/ui/ErrorState.jsx';
 import LoadingState from '../../components/ui/LoadingState.jsx';
@@ -30,8 +31,22 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <PageTitle title="Dashboard Admin" description="Riepilogo operativo dei contenuti, clienti e approvazioni." />
+      <PageTitle title="Dashboard Admin" description="Il pannello quotidiano per capire cosa richiede attenzione, cosa e in lavorazione e cosa sta per andare online." />
       <ErrorState message={state.error} />
+      <section className="surface mb-6 p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-brand-700">Azioni rapide</p>
+            <h2 className="mt-1 text-xl font-black">Da qui parti per il lavoro di oggi</h2>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <Link className="btn-secondary" to="/admin/clienti"><Plus className="h-4 w-4" />Aggiungi cliente</Link>
+            <Link className="btn-primary" to="/admin/contenuti"><WalletCards className="h-4 w-4" />Crea contenuto</Link>
+            <Link className="btn-secondary" to="/admin/board"><KanbanSquare className="h-4 w-4" />Vai alla Board</Link>
+            <Link className="btn-secondary" to="/admin/calendario"><CalendarDays className="h-4 w-4" />Vai al Calendario</Link>
+          </div>
+        </div>
+      </section>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard to="/admin/contenuti" icon={CheckCircle2} label="Contenuti da approvare" value={state.contents.filter((item) => item.status === 'to_approve').length} tone="amber" />
         <StatCard to="/admin/board" icon={Clock3} label="In lavorazione" value={state.contents.filter((item) => item.status === 'in_progress').length} />
@@ -46,12 +61,17 @@ export default function AdminDashboard() {
           </div>
           <div className="grid gap-3">
             {latestContents.map((content) => (
-              <div key={content.id} className="flex flex-col gap-3 rounded-lg border border-line bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="font-bold">{content.title}</p>
-                  <p className="mt-1 text-sm text-muted">{content.clients?.name} - {formatDate(content.scheduled_date)}</p>
+              <div key={content.id} className="premium-card flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 gap-3">
+                  <ContentPreview content={content} compact />
+                  <div className="min-w-0">
+                    <p className="truncate font-bold">{content.title}</p>
+                    <p className="mt-1 text-sm text-muted">{content.clients?.name} - {formatDate(content.scheduled_date)}</p>
+                    {content.copy_text && <p className="mt-1 line-clamp-1 text-xs text-muted">{content.copy_text}</p>}
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
+                  <Badge type="platform" value={content.platform} />
                   <Badge type="contentType" value={content.content_type} />
                   <Badge value={content.status} />
                 </div>
@@ -80,10 +100,15 @@ export default function AdminDashboard() {
         </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {upcomingContents.map((content) => (
-            <div key={content.id} className="rounded-lg border border-line p-4">
-              <p className="font-bold">{content.title}</p>
-              <p className="mt-1 text-sm text-muted">{content.clients?.name} - {formatDate(content.scheduled_date)}</p>
-              <div className="mt-3"><Badge value={content.status} /></div>
+            <div key={content.id} className="premium-card p-4">
+              <div className="flex gap-3">
+                <ContentPreview content={content} compact />
+                <div className="min-w-0">
+                  <p className="truncate font-bold">{content.title}</p>
+                  <p className="mt-1 text-sm text-muted">{content.clients?.name} - {formatDate(content.scheduled_date)}</p>
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2"><Badge type="platform" value={content.platform} /><Badge value={content.status} /></div>
             </div>
           ))}
         </div>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import CalendarMonthView from '../../components/calendar/CalendarMonthView.jsx';
+import ContentPreview from '../../components/contents/ContentPreview.jsx';
 import ContentForm from '../../components/contents/ContentForm.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
@@ -63,12 +64,17 @@ export default function CalendarPage() {
         <h2 className="section-title mb-4">Lista contenuti programmati</h2>
         <div className="grid gap-3">
           {scheduledContents.map((content) => (
-            <button key={content.id} className="flex flex-col gap-3 rounded-lg border border-line p-4 text-left transition hover:border-brand-200 hover:bg-brand-50 sm:flex-row sm:items-center sm:justify-between" onClick={() => { setEditing(content); setShowForm(true); }}>
-              <div>
-                <p className="font-bold">{content.title}</p>
-                <p className="mt-1 text-sm text-muted">{content.clients?.name} - {formatDate(content.scheduled_date)}</p>
+            <button key={content.id} className="premium-card flex flex-col gap-3 p-4 text-left sm:flex-row sm:items-center sm:justify-between" onClick={() => { setEditing(content); setShowForm(true); }}>
+              <div className="flex min-w-0 gap-3">
+                <ContentPreview content={content} compact />
+                <div className="min-w-0">
+                  <p className="truncate font-bold">{content.title}</p>
+                  <p className="mt-1 text-sm text-muted">{content.clients?.name} - {formatDate(content.scheduled_date)}</p>
+                  {content.copy_text && <p className="mt-1 line-clamp-1 text-xs text-muted">{content.copy_text}</p>}
+                </div>
               </div>
               <div className="flex flex-wrap gap-2">
+                <Badge type="platform" value={content.platform} />
                 <Badge type="contentType" value={content.content_type} />
                 <Badge value={content.status} />
               </div>

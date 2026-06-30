@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.2.1 - Rifinitura operativa e visuale
+
+### Aggiunto
+- Scorciatoie rapide piu evidenti nella dashboard.
+- Filtro rapido per cliente nella Board.
+- Preview media o placeholder elegante sulle card contenuto.
+- Lista mobile sintetica nel calendario mensile.
+
+### Migliorato
+- Dashboard come centro di controllo quotidiano.
+- Card contenuto con titolo, cliente, piattaforma, tipo, data e stato piu leggibili.
+- Badge stato, piattaforma e tipo contenuto con colori piu coerenti.
+- Board Kanban con colonne piu chiare e empty state meno grezzi.
+- Calendario con piattaforma visibile nei contenuti giornalieri.
+- Lista Clienti con avatar a iniziali.
+- Form Cliente diviso in dati cliente, informazioni operative e note interne.
+
+### Stabilizzato
+- Cambio stato contenuti mantenuto invariato con update mirato.
+- Nessuna modifica a schema Supabase, migration o seed.
+
 ## v0.2 - Miglioramento UX/UI e stabilizzazione
 
 ### Aggiunto

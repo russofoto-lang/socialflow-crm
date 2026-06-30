@@ -1,15 +1,16 @@
 import { Edit3, Trash2 } from 'lucide-react';
 import { formatDate } from '../../utils/date';
 import Badge from '../ui/Badge.jsx';
+import ContentPreview from './ContentPreview.jsx';
 
 export default function ContentsTable({ contents, onEdit, onDelete, onStatusChange }) {
   return (
     <div className="surface overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[960px] text-left text-sm">
+        <table className="w-full min-w-[980px] text-left text-sm">
           <thead className="bg-slate-50 text-xs uppercase text-muted">
             <tr>
-              <th className="px-4 py-3">Titolo</th>
+              <th className="px-4 py-3">Contenuto</th>
               <th className="px-4 py-3">Cliente</th>
               <th className="px-4 py-3">Tipo</th>
               <th className="px-4 py-3">Piattaforma</th>
@@ -23,8 +24,13 @@ export default function ContentsTable({ contents, onEdit, onDelete, onStatusChan
             {contents.map((content) => (
               <tr key={content.id} className="transition hover:bg-slate-50">
                 <td className="px-4 py-4">
-                  <p className="font-bold">{content.title}</p>
-                  {content.copy_text && <p className="mt-1 line-clamp-1 max-w-xs text-xs text-muted">{content.copy_text}</p>}
+                  <div className="flex min-w-0 items-center gap-3">
+                    <ContentPreview content={content} compact />
+                    <div className="min-w-0">
+                      <p className="truncate font-bold">{content.title}</p>
+                      {content.copy_text && <p className="mt-1 line-clamp-1 max-w-sm text-xs text-muted">{content.copy_text}</p>}
+                    </div>
+                  </div>
                 </td>
                 <td className="px-4 py-4 font-medium">{content.clients?.name ?? '-'}</td>
                 <td className="px-4 py-4"><Badge type="contentType" value={content.content_type} /></td>
