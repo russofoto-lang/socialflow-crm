@@ -9,7 +9,6 @@
 
 ## Media
 - Migliorare UX mobile dell'area cliente.
-- Migliorare calendario con navigazione mese precedente/successivo.
 - Aggiungere dettaglio contenuto piu completo.
 - Separare meglio commenti interni e commenti cliente.
 - Aggiungere ordinamenti nelle tabelle.
@@ -19,6 +18,7 @@
 - Aggiungere piccole preferenze UI.
 - Rendere i feedback temporanei o dismissible.
 - Valutare una vista compatta/densa per tabelle con molti contenuti.
+- Valutare scorciatoie da tastiera per ricerca globale.
 
 ## Futuro
 - AI Assistant per idee e copy.

@@ -54,6 +54,7 @@ Rendere l'app piu stabile, chiara e piacevole da usare nella gestione quotidiana
 - Ricerca clienti e contenuti disponibile.
 - Dashboard, board e calendario piu leggibili.
 - Rifinitura v0.2.1 completata con focus su dashboard operativa, board filtrabile, preview contenuti e calendario mobile.
+- Rifinitura v0.2.2 completata con dettaglio contenuto premium, calendario navigabile e ricerca globale admin.
 
 ## v0.3 Area Cliente
 

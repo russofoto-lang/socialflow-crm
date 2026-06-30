@@ -1,5 +1,6 @@
 import { Plus, Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ContentDetailModal from '../../components/contents/ContentDetailModal.jsx';
 import ContentForm from '../../components/contents/ContentForm.jsx';
 import ContentsTable from '../../components/contents/ContentsTable.jsx';
@@ -9,11 +10,12 @@ import LoadingState from '../../components/ui/LoadingState.jsx';
 import PageTitle from '../../components/ui/PageTitle.jsx';
 import SuccessState from '../../components/ui/SuccessState.jsx';
 import { useAuth } from '../../contexts/AuthContext.jsx';
-import { deleteContent, listClients, listContents, updateContentStatus, upsertContent } from '../../lib/crmApi';
+import { deleteContent, duplicateContent, getContent, listClients, listContents, updateContentStatus, upsertContent } from '../../lib/crmApi';
 import { contentTypeOptions, platformOptions, statusOptions } from '../../lib/options';
 
 export default function ContentsPage() {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [state, setState] = useState({ clients: [], contents: [], loading: true, error: '' });
   const [filters, setFilters] = useState({});
   const [search, setSearch] = useState('');
@@ -28,6 +30,19 @@ export default function ContentsPage() {
     .catch((err) => setState((current) => ({ ...current, loading: false, error: err.message })));
 
   useEffect(() => { refresh(); }, [filters]);
+
+  useEffect(() => {
+    const contentId = searchParams.get('content');
+    if (!contentId || state.loading) return;
+    const inList = state.contents.find((content) => content.id === contentId);
+    if (inList) {
+      setSelectedContent(inList);
+      return;
+    }
+    getContent(contentId)
+      .then(setSelectedContent)
+      .catch((err) => setState((current) => ({ ...current, error: err.message })));
+  }, [searchParams, state.contents, state.loading]);
 
   const filteredContents = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -62,11 +77,29 @@ export default function ContentsPage() {
     setState((current) => ({ ...current, error: '' }));
     try {
       await deleteContent(content.id);
+      setSelectedContent(null);
       setSuccess('Contenuto eliminato correttamente.');
       await refresh();
     } catch (err) {
       setState((current) => ({ ...current, error: err.message }));
     }
+  };
+
+  const duplicate = async (content) => {
+    setSuccess('');
+    setState((current) => ({ ...current, error: '' }));
+    await duplicateContent(content, user.id);
+    setSuccess('Contenuto duplicato correttamente in Idee.');
+    await refresh();
+  };
+
+  const changeStatus = async (id, status) => {
+    setSuccess('');
+    setState((current) => ({ ...current, error: '' }));
+    const updated = await updateContentStatus(id, status);
+    setSelectedContent((current) => current?.id === id ? { ...current, ...updated, status } : current);
+    setSuccess('Stato contenuto aggiornato.');
+    await refresh();
   };
 
   if (state.loading) return <LoadingState />;
@@ -98,9 +131,7 @@ export default function ContentsPage() {
             setSuccess('');
             setState((current) => ({ ...current, error: '' }));
             try {
-              await updateContentStatus(id, status);
-              setSuccess('Stato contenuto aggiornato.');
-              await refresh();
+              await changeStatus(id, status);
             } catch (err) {
               setState((current) => ({ ...current, error: err.message }));
             }
@@ -114,9 +145,12 @@ export default function ContentsPage() {
         clients={state.clients}
         saving={saving}
         userId={user.id}
-        onClose={() => setSelectedContent(null)}
+        onClose={() => { setSelectedContent(null); setSearchParams({}); }}
         onSubmit={save}
         onUpload={refresh}
+        onDuplicate={duplicate}
+        onStatusChange={changeStatus}
+        onDelete={remove}
       />
     </div>
   );

@@ -5,6 +5,8 @@ export const formatDate = (value) => (value ? format(parseISO(value), 'dd MMM yy
 
 export const formatDateTime = (value) => (value ? format(parseISO(value), 'dd MMM yyyy HH:mm', { locale: it }) : 'Non disponibile');
 
+export const toDateKey = (value) => format(value, 'yyyy-MM-dd');
+
 export function buildMonthDays(baseDate = new Date()) {
   const start = startOfMonth(baseDate);
   const end = endOfMonth(baseDate);

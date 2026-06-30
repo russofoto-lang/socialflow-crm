@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.2.2 - Dettaglio contenuto, calendario e ricerca globale
+
+### Aggiunto
+- Dettaglio contenuto premium con vista di controllo, modifica, cambio stato, duplicazione, eliminazione e chiusura.
+- Duplicazione contenuto con titolo preceduto da "Copia di" e stato iniziale "Idee".
+- Ricerca globale admin nell'header per clienti e contenuti.
+- Apertura diretta del dettaglio contenuto tramite parametro URL.
+- Navigazione calendario con mese precedente, mese successivo e pulsante Oggi.
+- Sezione "Prossimi 7 giorni" nel calendario.
+- Riepilogo operativo sintetico nella dashboard.
+
+### Migliorato
+- Copy e note interne leggibili nel modal dettaglio.
+- Preview/placeholder media nel dettaglio contenuto.
+- Calendario piu comodo su desktop e mobile.
+- Ricerca globale con risultati separati tra Clienti e Contenuti.
+
+### Stabilizzato
+- Cambio stato mantenuto con update mirato da Contenuti, Board e modal dettaglio.
+- Nessuna modifica a schema Supabase, migration o seed.
+
 ## v0.2.1 - Rifinitura operativa e visuale
 
 ### Aggiunto

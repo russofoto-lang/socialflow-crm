@@ -85,6 +85,21 @@ export async function updateContentStatus(id, status) {
   return data;
 }
 
+export async function duplicateContent(content, createdBy) {
+  return upsertContent({
+    client_id: content.client_id,
+    title: `Copia di ${content.title}`,
+    content_type: content.content_type,
+    platform: content.platform,
+    copy_text: content.copy_text,
+    internal_notes: content.internal_notes,
+    scheduled_date: content.scheduled_date,
+    status: 'ideas',
+    approval_status: 'not_required',
+    created_by: createdBy
+  });
+}
+
 export async function deleteContent(id) {
   const { error } = await supabase.from('contents').delete().eq('id', id);
   if (error) throw error;

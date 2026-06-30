@@ -26,6 +26,8 @@ export default function AdminDashboard() {
   const weekLimit = new Date();
   weekLimit.setDate(weekLimit.getDate() + 7);
   const scheduledThisWeek = state.contents.filter((content) => content.scheduled_date && new Date(content.scheduled_date) <= weekLimit);
+  const toApproveCount = state.contents.filter((item) => item.status === 'to_approve').length;
+  const inProgressCount = state.contents.filter((item) => item.status === 'in_progress').length;
   const latestContents = [...state.contents].sort((a, b) => new Date(b.created_at ?? 0) - new Date(a.created_at ?? 0)).slice(0, 6);
   const upcomingContents = [...scheduledThisWeek].sort((a, b) => new Date(a.scheduled_date) - new Date(b.scheduled_date)).slice(0, 6);
 
@@ -33,6 +35,12 @@ export default function AdminDashboard() {
     <div>
       <PageTitle title="Dashboard Admin" description="Il pannello quotidiano per capire cosa richiede attenzione, cosa e in lavorazione e cosa sta per andare online." />
       <ErrorState message={state.error} />
+      <section className="surface mb-6 p-5">
+        <p className="text-sm font-semibold text-muted">Riepilogo operativo</p>
+        <p className="mt-2 text-xl font-black">
+          Oggi hai {toApproveCount} contenuti da approvare, {inProgressCount} in lavorazione e {scheduledThisWeek.length} programmati nei prossimi 7 giorni.
+        </p>
+      </section>
       <section className="surface mb-6 p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
@@ -48,8 +56,8 @@ export default function AdminDashboard() {
         </div>
       </section>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard to="/admin/contenuti" icon={CheckCircle2} label="Contenuti da approvare" value={state.contents.filter((item) => item.status === 'to_approve').length} tone="amber" />
-        <StatCard to="/admin/board" icon={Clock3} label="In lavorazione" value={state.contents.filter((item) => item.status === 'in_progress').length} />
+        <StatCard to="/admin/contenuti" icon={CheckCircle2} label="Contenuti da approvare" value={toApproveCount} tone="amber" />
+        <StatCard to="/admin/board" icon={Clock3} label="In lavorazione" value={inProgressCount} />
         <StatCard to="/admin/calendario" icon={CalendarDays} label="Programmato questa settimana" value={scheduledThisWeek.length} tone="mint" />
         <StatCard to="/admin/clienti" icon={Users} label="Clienti attivi" value={state.clients.filter((client) => client.status === 'active').length} tone="coral" />
       </div>

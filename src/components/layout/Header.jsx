@@ -2,6 +2,7 @@ import { LogOut, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext.jsx';
+import GlobalSearch from './GlobalSearch.jsx';
 
 const adminLinks = [
   ['/admin', 'Dashboard'],
@@ -29,10 +30,11 @@ export default function Header({ variant }) {
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-ink text-xs font-black text-white">SF</span>
           <span className="font-black">SocialFlow CRM</span>
         </Link>
-        <div className="hidden lg:block">
+        <div className="hidden min-w-48 lg:block">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">Workspace</p>
-          <h1 className="text-lg font-bold">{profile?.full_name ?? 'Utente'}</h1>
+          <h1 className="truncate text-lg font-bold">{profile?.full_name ?? 'Utente'}</h1>
         </div>
+        {variant === 'admin' && <GlobalSearch />}
         <button className="btn-secondary px-3 lg:hidden" onClick={() => setOpen((value) => !value)} aria-label="Apri menu">
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
