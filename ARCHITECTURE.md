@@ -1,5 +1,19 @@
 # Architecture Notes - SocialFlow CRM
 
+## v0.4.3 - Quick wins performance
+
+La release v0.4.3 applica ottimizzazioni leggere senza cambiare comportamento prodotto o API pubbliche.
+
+Interventi:
+
+- route principali caricate con `React.lazy` e `Suspense`;
+- Board: mappa memoizzata `contentsByStatus` per evitare filtri ripetuti a ogni render;
+- Calendario: grouping memoizzato dei contenuti per data;
+- Global Search: caricamento dati spostato da mount iniziale a focus/query utile, con debounce;
+- Supabase: migration con indici idempotenti sulle colonne piu usate.
+
+Decisione: non sono state introdotte paginazione completa, query server-side nuove o separazione dei select leggeri. Questi punti restano candidati per v0.4.4/v0.5 per evitare regressioni in una release quick win.
+
 ## v0.4.2 - API layer modulare
 
 La release v0.4.2 spezza `src/lib/crmApi.js` in moduli piu piccoli, mantenendo invariata l'API pubblica usata dalle pagine.

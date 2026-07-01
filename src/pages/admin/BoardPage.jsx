@@ -47,6 +47,15 @@ export default function BoardPage() {
     [contents, clientFilter]
   );
 
+  const contentsByStatus = useMemo(() => {
+    const grouped = Object.fromEntries(statusOptions.map((status) => [status.value, []]));
+    visibleContents.forEach((content) => {
+      if (!grouped[content.status]) grouped[content.status] = [];
+      grouped[content.status].push(content);
+    });
+    return grouped;
+  }, [visibleContents]);
+
   useEffect(() => {
     const updateScrollbarWidth = () => {
       const element = boardScrollRef.current;
@@ -88,7 +97,7 @@ export default function BoardPage() {
             key={status.value}
             title={status.label}
             status={status.value}
-            contents={visibleContents.filter((content) => content.status === status.value)}
+            contents={contentsByStatus[status.value] ?? []}
             onOpen={contentActions.openContentDetail}
             onStatusChange={contentActions.changeContentStatus}
           />

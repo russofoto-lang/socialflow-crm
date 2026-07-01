@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.4.3 - Quick wins performance
+
+### Migliorato
+- Aggiunto lazy loading delle route principali con `React.lazy` e `Suspense`.
+- Memoizzato il raggruppamento dei contenuti per stato nella Board.
+- Memoizzato il raggruppamento dei contenuti per data nel calendario mensile.
+- Alleggerita la ricerca globale: clienti e contenuti vengono caricati solo su focus o query utile, con debounce.
+- Aggiunta migration idempotente con indici Supabase per query frequenti su contenuti e clienti.
+
+### Stabilizzato
+- Nessuna modifica a UX, schema tabelle, RLS, area cliente o API pubbliche.
+- Compatibilita' mantenuta con v0.4.2.
+
 ## v0.4.2 - API layer modulare
 
 ### Migliorato

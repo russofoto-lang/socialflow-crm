@@ -1,5 +1,5 @@
 import { Search } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { listClients, listContents } from '../../lib/crmApi';
 import { normalizeContacts, normalizeSocialLinks, primaryContact } from '../../utils/contacts';
@@ -13,18 +13,28 @@ export default function GlobalSearch() {
   const [clients, setClients] = useState([]);
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
+  const loadSearchData = useCallback(() => {
+    if (loaded || loading) return;
     setLoading(true);
+    setError('');
     Promise.all([listClients(), listContents()])
       .then(([nextClients, nextContents]) => {
         setClients(nextClients);
         setContents(nextContents);
+        setLoaded(true);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [loaded, loading]);
+
+  useEffect(() => {
+    if (query.trim().length < 2 || loaded) return undefined;
+    const timer = window.setTimeout(loadSearchData, 250);
+    return () => window.clearTimeout(timer);
+  }, [loadSearchData, loaded, query]);
 
   const results = useMemo(() => {
     const value = query.trim().toLowerCase();
@@ -64,7 +74,10 @@ export default function GlobalSearch() {
         className="form-input pl-9"
         placeholder="Cerca clienti, contenuti, copy o note..."
         value={query}
-        onFocus={() => setOpen(true)}
+        onFocus={() => {
+          setOpen(true);
+          loadSearchData();
+        }}
         onChange={(event) => {
           setQuery(event.target.value);
           setOpen(true);

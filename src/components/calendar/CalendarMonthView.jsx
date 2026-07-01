@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { format, isToday } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { buildMonthDays, formatDate } from '../../utils/date';
@@ -5,11 +6,11 @@ import Badge from '../ui/Badge.jsx';
 
 export default function CalendarMonthView({ contents, date = new Date(), selectedDate, onDayClick, onContentClick, onContentMove }) {
   const month = buildMonthDays(date);
-  const byDate = contents.reduce((acc, item) => {
+  const byDate = useMemo(() => contents.reduce((acc, item) => {
     if (!item.scheduled_date) return acc;
     acc[item.scheduled_date] = [...(acc[item.scheduled_date] ?? []), item];
     return acc;
-  }, {});
+  }, {}), [contents]);
 
   const handleDrop = (event, targetDate) => {
     event.preventDefault();

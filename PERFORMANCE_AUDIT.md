@@ -8,6 +8,8 @@ Scope: rendering React, query Supabase, re-render, bundle, lazy loading, memoizz
 
 L'app e' performante per un dataset piccolo, ma la crescita di clienti, contenuti, file e commenti portera' rapidamente a rallentamenti percepibili. Il rischio principale e' che molte pagine caricano collezioni complete da Supabase e poi filtrano, ordinano e aggregano lato browser.
 
+Aggiornamento v0.4.3: sono stati risolti i quick win su lazy loading route, memoizzazione Board/Calendario, caricamento lazy della ricerca globale e indici Supabase. Restano da affrontare le query lightweight, la paginazione e gli update ottimistici.
+
 Il bundle production attuale e' circa:
 
 - JS: `515 KB` minificato
@@ -598,4 +600,3 @@ Sostituire con modal conferma non bloccante.
 8. Memoizzazione Calendar/Board.
 9. Ottimizzazione immagini.
 10. Pulizia UX secondaria.
-
