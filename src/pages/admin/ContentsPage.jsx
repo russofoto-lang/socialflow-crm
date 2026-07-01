@@ -10,7 +10,7 @@ import LoadingState from '../../components/ui/LoadingState.jsx';
 import PageTitle from '../../components/ui/PageTitle.jsx';
 import SuccessState from '../../components/ui/SuccessState.jsx';
 import { useAuth } from '../../contexts/AuthContext.jsx';
-import { deleteContent, duplicateContent, getContent, listClients, listContents, updateContentStatus, upsertContent } from '../../lib/crmApi';
+import { deleteContent, duplicateContent, getContent, listClients, listContents, updateContentStatus, uploadContentFile, upsertContent } from '../../lib/crmApi';
 import { contentTypeOptions, platformOptions, statusOptions } from '../../lib/options';
 
 export default function ContentsPage() {
@@ -62,7 +62,9 @@ export default function ContentsPage() {
     setSuccess('');
     try {
       const isEdit = Boolean(payload.id);
-      await upsertContent({ ...payload, created_by: payload.created_by ?? user.id });
+      const { pendingFile, ...contentPayload } = payload;
+      const saved = await upsertContent({ ...contentPayload, created_by: contentPayload.created_by ?? user.id });
+      if (pendingFile) await uploadContentFile({ contentId: saved.id, file: pendingFile, userId: user.id });
       setShowForm(false);
       setEditing(null);
       setSelectedContent(null);

@@ -3,9 +3,20 @@ import { formatDate } from '../../utils/date';
 import ContentPreview from '../contents/ContentPreview.jsx';
 import Badge from '../ui/Badge.jsx';
 
-export default function BoardCard({ content, onStatusChange }) {
+export default function BoardCard({ content, onOpen, onStatusChange }) {
   return (
-    <article className="premium-card p-3">
+    <article
+      className="premium-card cursor-pointer p-3 transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-soft"
+      role="button"
+      tabIndex={0}
+      onClick={() => onOpen?.(content)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen?.(content);
+        }
+      }}
+    >
       <ContentPreview content={content} />
       <div className="mt-3 flex items-start justify-between gap-2">
         <div className="min-w-0">
@@ -20,7 +31,13 @@ export default function BoardCard({ content, onStatusChange }) {
         <Badge type="contentType" value={content.content_type} />
       </div>
       <p className="mt-3 flex items-center gap-1.5 text-xs font-semibold text-slate-600"><CalendarDays className="h-3.5 w-3.5" />{formatDate(content.scheduled_date)}</p>
-      <select className="form-input mt-3" value={content.status} onChange={(e) => onStatusChange(content.id, e.target.value)}>
+      <select
+        className="form-input mt-3"
+        value={content.status}
+        onClick={(event) => event.stopPropagation()}
+        onKeyDown={(event) => event.stopPropagation()}
+        onChange={(e) => onStatusChange(content.id, e.target.value)}
+      >
         <option value="ideas">Idee</option>
         <option value="todo">Da fare</option>
         <option value="in_progress">In lavorazione</option>

@@ -1,7 +1,7 @@
 import { Inbox } from 'lucide-react';
 import BoardCard from './BoardCard.jsx';
 
-export default function BoardColumn({ title, contents, onStatusChange }) {
+export default function BoardColumn({ title, contents, onOpen, onStatusChange }) {
   return (
     <section className="min-w-[18.5rem] flex-1 rounded-xl border border-line bg-slate-100/80 p-3 shadow-sm">
       <div className="mb-3 flex items-center justify-between">
@@ -9,7 +9,7 @@ export default function BoardColumn({ title, contents, onStatusChange }) {
         <span className="rounded-md bg-white px-2.5 py-1 text-xs font-black text-muted ring-1 ring-line">{contents.length}</span>
       </div>
       <div className="grid gap-3">
-        {contents.map((content) => <BoardCard key={content.id} content={content} onStatusChange={onStatusChange} />)}
+        {contents.map((content) => <BoardCard key={content.id} content={content} onOpen={onOpen} onStatusChange={onStatusChange} />)}
         {contents.length === 0 && (
           <div className="rounded-lg border border-dashed border-slate-300 bg-white/70 px-4 py-8 text-center">
             <div className="mx-auto mb-2 grid h-9 w-9 place-items-center rounded-md bg-slate-100 text-slate-400">
