@@ -81,6 +81,9 @@ Rendere la gestione clienti piu utile per l'Admin con statistiche operative e ar
 
 ## v0.4 Approvazioni contenuti
 
+### Nota tecnica v0.4.2
+Il layer API e' stato diviso in moduli dedicati sotto `src/lib/api/`, mantenendo `crmApi.js` come facciata compatibile. La release non cambia UX, query, schema Supabase o RLS.
+
 ### Nota tecnica v0.4.1
 Prima delle nuove funzioni approvative e' stata completata una release tecnica per ridurre la duplicazione delle azioni contenuto tramite `useContentActions()`, senza modificare UX, schema o sicurezza.
 

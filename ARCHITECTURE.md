@@ -1,5 +1,48 @@
 # Architecture Notes - SocialFlow CRM
 
+## v0.4.2 - API layer modulare
+
+La release v0.4.2 spezza `src/lib/crmApi.js` in moduli piu piccoli, mantenendo invariata l'API pubblica usata dalle pagine.
+
+## Struttura API
+
+```txt
+src/lib/api/
+  clientsApi.js
+  contentsApi.js
+  commentsApi.js
+  filesApi.js
+  profilesApi.js
+  dashboardApi.js
+  approvalsApi.js
+  index.js
+```
+
+Responsabilita':
+
+- `clientsApi.js`: lettura, salvataggio, eliminazione e stato clienti.
+- `contentsApi.js`: query contenuti, dettaglio, salvataggio, duplicazione, eliminazione e cambio stato.
+- `commentsApi.js`: creazione commenti.
+- `filesApi.js`: upload file contenuto e URL pubblica.
+- `profilesApi.js`: profilo utente e cliente collegato.
+- `approvalsApi.js`: approvazione contenuto e richiesta modifiche.
+- `dashboardApi.js`: spazio riservato a future query aggregate della dashboard.
+- `index.js`: export unico dei moduli API.
+
+`src/lib/crmApi.js` resta come facciata di compatibilita':
+
+```js
+export * from './api/index';
+```
+
+## Decisione
+
+Non sono state modificate query, filtri, RLS o schema Supabase. Il refactor e' solo organizzativo: riduce la dimensione di `crmApi.js` e prepara il codice a ottimizzazioni successive senza forzare una migrazione degli import nelle pagine.
+
+## Prossimo passo consigliato
+
+La v0.4.3 puo' lavorare su query piu mirate e paginazione lato API, partendo da `dashboardApi.js` e dalle liste contenuti piu pesanti.
+
 ## v0.4.1 - Centralizzazione azioni contenuto
 
 La release v0.4.1 introduce `src/hooks/useContentActions.js` per ridurre la duplicazione della logica contenuto nelle pagine admin.
@@ -110,4 +153,3 @@ Prima di aggiungere nuove azioni sui contenuti:
 ## Prossimo passo consigliato
 
 Estendere l'hook con update ottimistici per ridurre i refresh completi dopo ogni mutazione.
-

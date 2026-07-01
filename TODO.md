@@ -14,6 +14,7 @@
 - Valutare filtri rapidi piu evoluti nella scheda cliente se il numero di contenuti cresce molto.
 - Valutare una vista agenda settimanale se il calendario mensile contiene molti contenuti per giorno.
 - Estendere gradualmente `useContentActions()` con update ottimistici, evitando refresh completi dopo ogni mutazione.
+- Ottimizzare in v0.4.3 le query piu pesanti partendo dai moduli `dashboardApi.js` e `contentsApi.js`.
 
 ## Bassa
 - Preparare template PDF piano editoriale.

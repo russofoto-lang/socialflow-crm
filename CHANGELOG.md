@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.4.2 - API layer modulare
+
+### Migliorato
+- Spezzato `src/lib/crmApi.js` in moduli API dedicati per clienti, contenuti, commenti, file, profili, dashboard e approvazioni.
+- Mantenuto `crmApi.js` come facciata di compatibilita' per non cambiare gli import esistenti nelle pagine.
+- Centralizzato l'export pubblico in `src/lib/api/index.js`.
+
+### Stabilizzato
+- Nessuna modifica a UX, schema Supabase, RLS o logica delle query.
+- Compatibilita' mantenuta con la v0.4.1 e con `useContentActions()`.
+
 ## v0.4.1 - Hook azioni contenuto
 
 ### Migliorato
