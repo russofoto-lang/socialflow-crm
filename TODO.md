@@ -13,6 +13,7 @@
 - Aggiungere ordinamenti nelle tabelle.
 - Valutare filtri rapidi piu evoluti nella scheda cliente se il numero di contenuti cresce molto.
 - Valutare una vista agenda settimanale se il calendario mensile contiene molti contenuti per giorno.
+- Aggiungere indicatori operativi simili a Dashboard anche sulle card Board e Calendario.
 - Estendere gradualmente `useContentActions()` con update ottimistici, evitando refresh completi dopo ogni mutazione.
 - Ottimizzare in una prossima release le query piu pesanti partendo dai moduli `dashboardApi.js` e `contentsApi.js`.
 - Introdurre query leggere per ricerca globale, dashboard, board e calendario.

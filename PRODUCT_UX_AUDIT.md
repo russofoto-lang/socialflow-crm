@@ -16,6 +16,8 @@ Il problema principale non e' la mancanza di funzioni isolate, ma il flusso quot
 
 Priorita': Molto alta
 
+Stato v0.5: risolto in prima versione con "Priorita' di oggi", "Prossimi 7 giorni" e "Clienti da seguire". Restano da estendere gli stessi segnali operativi a Board e Calendario.
+
 ### Problema
 
 La dashboard mostra numeri e liste, ma non guida davvero la giornata. Un Social Media Manager si aspetta una vista tipo "oggi devo fare queste cose", non solo riepiloghi.
@@ -506,4 +508,3 @@ Board drag/drop e calendario mensile possono restare secondari.
 5. Scheda cliente con salute cliente e prossima copertura editoriale.
 
 Queste cinque modifiche renderebbero l'app molto piu' vicina a uno strumento quotidiano da Social Media Manager professionista.
-

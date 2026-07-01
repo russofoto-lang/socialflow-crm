@@ -1,5 +1,28 @@
 # Architecture Notes - SocialFlow CRM
 
+## v0.5.0 - Dashboard operativa
+
+La release v0.5 introduce una dashboard piu orientata al lavoro quotidiano senza cambiare schema, RLS o API pubbliche.
+
+Nuovi componenti:
+
+```txt
+src/components/dashboard/
+  PriorityToday.jsx
+  UpcomingWeek.jsx
+  ClientsToFollow.jsx
+  DashboardStatCards.jsx
+```
+
+Responsabilita':
+
+- `PriorityToday.jsx`: mostra le categorie operative in ordine di urgenza.
+- `UpcomingWeek.jsx`: lista i contenuti programmati nei prossimi 7 giorni con warning su copy/media.
+- `ClientsToFollow.jsx`: evidenzia clienti attivi senza contenuti futuri.
+- `DashboardStatCards.jsx`: mantiene le statistiche sintetiche gia' presenti.
+
+Decisione: i dati sono ancora ricavati da `listClients()` e `listContents()` per mantenere compatibilita' con v0.4.3. Il calcolo delle priorita usa `useMemo` in `AdminDashboard.jsx` per evitare ricalcoli inutili durante i render.
+
 ## v0.4.3 - Quick wins performance
 
 La release v0.4.3 applica ottimizzazioni leggere senza cambiare comportamento prodotto o API pubbliche.

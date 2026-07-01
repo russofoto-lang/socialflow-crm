@@ -110,7 +110,27 @@ Formalizzare il ciclo di approvazione cliente in modo affidabile e tracciabile.
 - Richiesta modifiche torna visibile all'Admin.
 - Storico approvazione consultabile.
 
-## v0.5 Chat/commenti per contenuto
+## v0.5 Dashboard Operativa / Priorita di oggi - completata
+
+### Obiettivo
+Trasformare la dashboard admin in una schermata quotidiana che indica subito cosa fare, cosa e' in ritardo, cosa manca e quali clienti sono scoperti.
+
+### Funzioni completate
+- Sezione "Priorita di oggi".
+- Contenuti in ritardo, previsti oggi, da approvare, senza copy e senza media.
+- Clienti attivi senza contenuti futuri nei prossimi 7 giorni.
+- Sezione "Prossimi 7 giorni".
+- Apertura dettaglio contenuto dalla dashboard.
+- Statistiche esistenti mantenute ma meno centrali.
+
+### Cose escluse
+- Nuovo schema Supabase.
+- Query dashboard avanzate.
+- Notifiche.
+- AI.
+- Inbox idee.
+
+## v0.6 Chat/commenti per contenuto
 
 ### Obiettivo
 Centralizzare le conversazioni relative a ogni contenuto.
@@ -131,7 +151,7 @@ Centralizzare le conversazioni relative a ogni contenuto.
 - Cliente puo commentare solo contenuti propri.
 - Admin vede tutti i commenti.
 
-## v0.6 Export PDF piano editoriale
+## v0.7 Export PDF piano editoriale
 
 ### Obiettivo
 Consentire all'agenzia di esportare un piano editoriale condivisibile.
@@ -152,7 +172,7 @@ Consentire all'agenzia di esportare un piano editoriale condivisibile.
 - Contenuti ordinati per data.
 - Export coerente con filtri scelti.
 
-## v0.7 AI Assistant
+## v0.8 AI Assistant
 
 ### Obiettivo
 Introdurre supporto AI come assistente operativo, senza sostituire il lavoro umano.

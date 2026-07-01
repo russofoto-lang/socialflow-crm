@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.5.0 - Dashboard Operativa / Priorita di oggi
+
+### Aggiunto
+- Nuova sezione "Priorita di oggi" nella Dashboard Admin.
+- Evidenza operativa per contenuti in ritardo, previsti oggi, da approvare, senza copy, senza media e clienti scoperti.
+- Sezione "Prossimi 7 giorni" con contenuti ordinati per data e warning su copy/media mancanti.
+- Sezione "Clienti da seguire" per clienti attivi senza contenuti futuri nei prossimi 7 giorni.
+- Componenti dashboard dedicati: `PriorityToday`, `UpcomingWeek`, `ClientsToFollow`, `DashboardStatCards`.
+
+### Migliorato
+- Le statistiche esistenti restano disponibili, ma sono meno centrali rispetto alle azioni operative.
+- I contenuti dalla dashboard continuano ad aprire il dettaglio contenuto gia' esistente.
+
+### Stabilizzato
+- Nessuna modifica a schema Supabase, RLS, area cliente, Board, Calendario o Contenuti.
+- Nessuna nuova query duplicata: le sezioni sono derivate dai dati gia' caricati dalla dashboard.
+
 ## v0.4.3 - Quick wins performance
 
 ### Migliorato
