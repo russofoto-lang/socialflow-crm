@@ -29,6 +29,11 @@ export default function ContentsPage() {
     .then(([clients, contents]) => setState({ clients, contents, loading: false, error: '' }))
     .catch((err) => setState((current) => ({ ...current, loading: false, error: err.message })));
 
+  useEffect(() => {
+    const clientId = searchParams.get('client_id');
+    if (clientId) setFilters((current) => ({ ...current, client_id: clientId }));
+  }, [searchParams]);
+
   useEffect(() => { refresh(); }, [filters]);
 
   useEffect(() => {

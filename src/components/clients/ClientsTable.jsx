@@ -11,7 +11,7 @@ function initials(name = '') {
     .toUpperCase() || 'CL';
 }
 
-export default function ClientsTable({ clients, onEdit, onDelete }) {
+export default function ClientsTable({ clients, onEdit, onDelete, onArchiveToggle }) {
   return (
     <div className="surface overflow-hidden">
       <div className="overflow-x-auto">
@@ -45,7 +45,10 @@ export default function ClientsTable({ clients, onEdit, onDelete }) {
                 <td className="px-4 py-4">{client.managed_brands || '-'}</td>
                 <td className="px-4 py-4"><Badge value={client.status} /></td>
                 <td className="px-4 py-4 text-right">
-                  <button className="text-sm font-bold text-brand-700 hover:underline" onClick={() => onEdit(client)}>Modifica</button>
+                  <button className="text-sm font-bold text-brand-700 hover:underline" onClick={() => onArchiveToggle(client)}>
+                    {client.status === 'inactive' ? 'Riattiva' : 'Archivia'}
+                  </button>
+                  <button className="ml-4 text-sm font-bold text-brand-700 hover:underline" onClick={() => onEdit(client)}>Modifica</button>
                   <button className="ml-4 text-sm font-bold text-rose-700 hover:underline" onClick={() => onDelete(client)}>Elimina</button>
                 </td>
               </tr>

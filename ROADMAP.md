@@ -56,27 +56,28 @@ Rendere l'app piu stabile, chiara e piacevole da usare nella gestione quotidiana
 - Rifinitura v0.2.1 completata con focus su dashboard operativa, board filtrabile, preview contenuti e calendario mobile.
 - Rifinitura v0.2.2 completata con dettaglio contenuto premium, calendario navigabile e ricerca globale admin.
 
-## v0.3 Area Cliente
+## v0.3 Statistiche e archiviazione cliente - completata
 
 ### Obiettivo
-Rendere l'area cliente piu completa e semplice da usare per revisione e consultazione contenuti.
+Rendere la gestione clienti piu utile per l'Admin con statistiche operative e archiviazione senza perdita di storico.
 
 ### Funzioni previste
-- Home cliente dedicata.
-- Vista contenuti da approvare.
-- Storico contenuti approvati/pubblicati.
-- Calendario cliente migliorato.
-- Visualizzazione allegati piu chiara.
+- Scheda cliente con dati, stato, note interne e contenuti collegati.
+- Statistiche per cliente calcolate dai contenuti esistenti.
+- Contenuti recenti con collegamento al dettaglio contenuto.
+- Archiviazione e riattivazione cliente tramite `clients.status`.
+- Filtro per mostrare i clienti archiviati.
 
 ### Cose escluse
-- Chat realtime.
-- Notifiche email automatiche.
-- Accesso multi-cliente per lo stesso utente.
+- Nuove tabelle Supabase.
+- AI, PDF, pagamenti, notifiche o integrazioni social.
+- Workflow approvativi aggiuntivi.
 
 ### Criteri di completamento
-- Cliente vede solo i propri dati.
-- Cliente trova facilmente contenuti da approvare.
-- Storico e calendario sono consultabili da mobile.
+- Clienti archiviati nascosti dalla lista principale.
+- Storico e contenuti collegati non eliminati.
+- Scheda cliente consultabile con statistiche e contenuti recenti.
+- Build produzione verificata.
 
 ## v0.4 Approvazioni contenuti
 

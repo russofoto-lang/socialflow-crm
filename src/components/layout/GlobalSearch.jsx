@@ -81,7 +81,10 @@ export default function GlobalSearch() {
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-sm font-black">{client.name}</p>
-                        <p className="text-xs text-muted">{client.contact_name || 'Referente non indicato'} - {client.email || 'Email non indicata'}</p>
+                        <p className="text-xs text-muted">
+                          {client.contact_name || 'Referente non indicato'} - {client.email || 'Email non indicata'}
+                          {client.status === 'inactive' ? ' - Archiviato' : ''}
+                        </p>
                       </div>
                       <Badge value={client.status} />
                     </div>

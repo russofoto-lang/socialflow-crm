@@ -45,7 +45,7 @@ export default function ClientForm({ initialValue, onSubmit, onCancel, saving })
           <p className="text-xs font-black uppercase tracking-wide text-brand-700">Informazioni operative</p>
         </div>
         <label className="text-sm font-semibold">Brand/social gestiti<input className="form-input mt-1" value={form.managed_brands ?? ''} onChange={(e) => update('managed_brands', e.target.value)} /></label>
-        <label className="text-sm font-semibold">Stato<select className="form-input mt-1" value={form.status} onChange={(e) => update('status', e.target.value)}><option value="active">Attivo</option><option value="inactive">Non attivo</option></select></label>
+        <label className="text-sm font-semibold">Stato<select className="form-input mt-1" value={form.status} onChange={(e) => update('status', e.target.value)}><option value="active">Attivo</option><option value="inactive">Archiviato</option></select></label>
       </section>
       <section className="grid gap-4 border-t border-line pt-5">
         <div>

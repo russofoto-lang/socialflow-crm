@@ -23,7 +23,7 @@ const badgeClasses = {
 
 export default function Badge({ type = 'status', value }) {
   const options = type === 'contentType' ? contentTypeOptions : type === 'platform' ? platformOptions : type === 'approval' ? approvalOptions : statusOptions;
-  const fallback = value === 'active' ? 'Attivo' : value === 'inactive' ? 'Non attivo' : value;
+  const fallback = value === 'active' ? 'Attivo' : value === 'inactive' ? 'Archiviato' : value;
   return (
     <span className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-bold ring-1 ${badgeClasses[value] ?? 'bg-slate-100 text-slate-700 ring-slate-200'}`}>
       {labelFor(options, value) || fallback}

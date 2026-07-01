@@ -34,6 +34,17 @@ export async function deleteClient(id) {
   if (error) throw error;
 }
 
+export async function updateClientStatus(id, status) {
+  const { data, error } = await supabase
+    .from('clients')
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 export async function listContents(filters = {}) {
   let query = supabase.from('contents').select(contentSelect).order('scheduled_date', { ascending: true });
   if (filters.client_id) query = query.eq('client_id', filters.client_id);
