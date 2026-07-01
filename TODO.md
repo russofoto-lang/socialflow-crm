@@ -9,9 +9,10 @@
 
 ## Media
 - Migliorare UX mobile dell'area cliente.
-- Aggiungere dettaglio contenuto piu completo.
 - Separare meglio commenti interni e commenti cliente.
 - Aggiungere ordinamenti nelle tabelle.
+- Valutare filtri rapidi piu evoluti nella scheda cliente se il numero di contenuti cresce molto.
+- Valutare una vista agenda settimanale se il calendario mensile contiene molti contenuti per giorno.
 
 ## Bassa
 - Preparare template PDF piano editoriale.

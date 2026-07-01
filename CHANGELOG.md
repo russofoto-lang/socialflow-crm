@@ -1,5 +1,42 @@
 # Changelog
 
+## v0.3.1 - Calendario editoriale compatto
+
+### Migliorato
+- Vista mensile del calendario resa piu compatta e leggibile.
+- Rimossa la scritta "Nessun contenuto" dalle celle vuote.
+- Ogni giorno mostra al massimo 2 contenuti, con indicatore per gli altri elementi.
+- Aggiunta evidenza del giorno selezionato.
+- Aggiunta mini agenda "Giorno selezionato" con titolo, cliente, piattaforma, tipo e stato.
+- La creazione contenuto dal calendario ora avviene in modal con data gia impostata.
+- Il click su un contenuto apre il modal dettaglio contenuto, senza form inline e senza perdere lo scroll.
+- Sezione "Prossimi 7 giorni" resa piu compatta.
+
+### Stabilizzato
+- Nessuna modifica a schema Supabase, migration o seed.
+- Filtri cliente/stato e navigazione mese precedente/Oggi/mese successivo mantenuti.
+
+## v0.3 - Statistiche e archiviazione cliente
+
+### Aggiunto
+- Scheda cliente piu completa con anagrafica, referente, contatti, brand/social, stato, note interne e brand voice se presente nello schema.
+- Card statistiche per cliente calcolate dai contenuti collegati: totali, idee, da fare, in lavorazione, da approvare, pubblicati e programmati nei prossimi 7 giorni.
+- Sezione "Contenuti recenti" nella scheda cliente con titolo, tipo, piattaforma, stato e data prevista.
+- Link dai contenuti recenti al dettaglio contenuto tramite parametro URL stabile.
+- Azione "Archivia cliente" e "Riattiva cliente" con conferma.
+- Filtro "Mostra archiviati" nella pagina Clienti.
+
+### Migliorato
+- I clienti archiviati sono nascosti dalla lista principale di default.
+- Lo stato `inactive` viene mostrato in interfaccia come "Archiviato".
+- L'azione Archivia e' piu evidente e consigliata rispetto a Elimina.
+- Link dalla scheda cliente alla pagina Contenuti filtrata per cliente.
+
+### Stabilizzato
+- Nessuna eliminazione dello storico cliente o dei contenuti collegati durante archiviazione/riattivazione.
+- Nessuna nuova migration: la v0.3 riusa il campo esistente `clients.status` con valori `active` e `inactive`.
+- Build produzione verificata con `npm run build`.
+
 ## v0.2.2 - Dettaglio contenuto, calendario e ricerca globale
 
 ### Aggiunto
