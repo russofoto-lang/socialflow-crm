@@ -154,6 +154,42 @@ export default function CalendarPage() {
     if (content.scheduled_date) setSelectedDate(content.scheduled_date);
   };
 
+  const moveContentToDate = async (content, targetDate) => {
+    if (!targetDate || content.scheduled_date === targetDate) {
+      setSelectedDate(targetDate);
+      return;
+    }
+
+    setSuccess('');
+    setState((current) => ({ ...current, error: '' }));
+    try {
+      const oldDateLabel = formatDate(content.scheduled_date);
+      const newDateLabel = formatDate(targetDate);
+      const timestamp = format(new Date(), 'dd MMM yyyy HH:mm', { locale: it });
+      const moveNote = `[${timestamp}] Spostato nel calendario da ${oldDateLabel} a ${newDateLabel}.`;
+      const updatedNotes = [content.internal_notes, moveNote].filter(Boolean).join('\n\n');
+      const updated = await upsertContent({
+        id: content.id,
+        client_id: content.client_id,
+        title: content.title,
+        content_type: content.content_type,
+        platform: content.platform,
+        copy_text: content.copy_text,
+        internal_notes: updatedNotes,
+        scheduled_date: targetDate,
+        status: content.status,
+        approval_status: content.approval_status,
+        created_by: content.created_by ?? user.id
+      });
+      setSelectedDate(targetDate);
+      setSelectedContent((current) => current?.id === content.id ? { ...current, ...updated, internal_notes: updatedNotes, scheduled_date: targetDate } : current);
+      setSuccess(`Contenuto spostato al ${newDateLabel}.`);
+      await refresh();
+    } catch (err) {
+      setState((current) => ({ ...current, error: err.message }));
+    }
+  };
+
   if (state.loading) return <LoadingState />;
 
   return (
@@ -216,6 +252,7 @@ export default function CalendarPage() {
           selectedDate={selectedDate}
           onDayClick={setSelectedDate}
           onContentClick={openContent}
+          onContentMove={moveContentToDate}
         />
         <aside className="surface p-4">
           <div className="mb-4 flex items-start justify-between gap-3">

@@ -3,13 +3,20 @@ import { it } from 'date-fns/locale';
 import { buildMonthDays, formatDate } from '../../utils/date';
 import Badge from '../ui/Badge.jsx';
 
-export default function CalendarMonthView({ contents, date = new Date(), selectedDate, onDayClick, onContentClick }) {
+export default function CalendarMonthView({ contents, date = new Date(), selectedDate, onDayClick, onContentClick, onContentMove }) {
   const month = buildMonthDays(date);
   const byDate = contents.reduce((acc, item) => {
     if (!item.scheduled_date) return acc;
     acc[item.scheduled_date] = [...(acc[item.scheduled_date] ?? []), item];
     return acc;
   }, {});
+
+  const handleDrop = (event, targetDate) => {
+    event.preventDefault();
+    const contentId = event.dataTransfer.getData('text/plain');
+    const content = contents.find((item) => item.id === contentId);
+    if (content) onContentMove?.(content, targetDate);
+  };
 
   return (
     <div className="surface overflow-hidden">
@@ -29,6 +36,8 @@ export default function CalendarMonthView({ contents, date = new Date(), selecte
               key={day.key}
               className={`min-h-24 border-b border-r border-line p-2 text-left align-top transition hover:bg-brand-50 ${day.inMonth ? 'bg-white' : 'bg-slate-50 text-slate-400'} ${isSelected ? 'bg-brand-50 ring-2 ring-inset ring-brand-500' : ''}`}
               onClick={() => onDayClick?.(day.key)}
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={(event) => handleDrop(event, day.key)}
             >
               <div className="flex items-center justify-between">
                 <span className={`grid h-6 min-w-6 place-items-center rounded-md px-1 text-xs font-black ${isToday(day.date) ? 'bg-ink text-white' : ''}`}>{format(day.date, 'd')}</span>
@@ -38,7 +47,14 @@ export default function CalendarMonthView({ contents, date = new Date(), selecte
                 {dayContents.slice(0, 2).map((content) => (
                   <span
                     key={content.id}
-                    className="rounded-md border border-line bg-white px-2 py-1.5 text-xs shadow-sm transition hover:border-brand-200 hover:bg-white"
+                    className="cursor-grab rounded-md border border-line bg-white px-2 py-1.5 text-xs shadow-sm transition hover:border-brand-200 hover:bg-white active:cursor-grabbing"
+                    draggable
+                    title="Trascina per cambiare data"
+                    onDragStart={(event) => {
+                      event.stopPropagation();
+                      event.dataTransfer.effectAllowed = 'move';
+                      event.dataTransfer.setData('text/plain', content.id);
+                    }}
                     onClick={(event) => {
                       event.stopPropagation();
                       onContentClick?.(content);
