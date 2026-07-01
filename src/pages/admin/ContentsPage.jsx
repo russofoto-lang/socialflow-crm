@@ -10,7 +10,8 @@ import LoadingState from '../../components/ui/LoadingState.jsx';
 import PageTitle from '../../components/ui/PageTitle.jsx';
 import SuccessState from '../../components/ui/SuccessState.jsx';
 import { useAuth } from '../../contexts/AuthContext.jsx';
-import { deleteContent, duplicateContent, getContent, listClients, listContents, updateContentStatus, uploadContentFile, upsertContent } from '../../lib/crmApi';
+import useContentActions from '../../hooks/useContentActions';
+import { getContent, listClients, listContents } from '../../lib/crmApi';
 import { contentTypeOptions, platformOptions, statusOptions } from '../../lib/options';
 
 export default function ContentsPage() {
@@ -21,14 +22,29 @@ export default function ContentsPage() {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('date_asc');
   const [editing, setEditing] = useState(null);
-  const [selectedContent, setSelectedContent] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState('');
 
   const refresh = () => Promise.all([listClients(), listContents(filters)])
     .then(([clients, contents]) => setState({ clients, contents, loading: false, error: '' }))
     .catch((err) => setState((current) => ({ ...current, loading: false, error: err.message })));
+
+  const contentActions = useContentActions({
+    userId: user.id,
+    refresh,
+    messages: {
+      saveEdit: 'Contenuto aggiornato correttamente.',
+      saveCreate: 'Contenuto creato correttamente.',
+      delete: 'Contenuto eliminato correttamente.',
+      duplicate: 'Contenuto duplicato correttamente in Idee.',
+      status: 'Stato contenuto aggiornato.'
+    },
+    onAfterSave: () => {
+      setShowForm(false);
+      setEditing(null);
+      contentActions.closeContentDetail();
+    },
+    onAfterDelete: () => contentActions.closeContentDetail()
+  });
 
   useEffect(() => {
     const clientId = searchParams.get('client_id');
@@ -42,11 +58,11 @@ export default function ContentsPage() {
     if (!contentId || state.loading) return;
     const inList = state.contents.find((content) => content.id === contentId);
     if (inList) {
-      setSelectedContent(inList);
+      contentActions.openContentDetail(inList);
       return;
     }
     getContent(contentId)
-      .then(setSelectedContent)
+      .then(contentActions.openContentDetail)
       .catch((err) => setState((current) => ({ ...current, error: err.message })));
   }, [searchParams, state.contents, state.loading]);
 
@@ -65,65 +81,13 @@ export default function ContentsPage() {
     });
   }, [state.contents, search, sortBy]);
 
-  const save = async (payload) => {
-    setSaving(true);
-    setSuccess('');
-    try {
-      const isEdit = Boolean(payload.id);
-      const { pendingFile, ...contentPayload } = payload;
-      const saved = await upsertContent({ ...contentPayload, created_by: contentPayload.created_by ?? user.id });
-      if (pendingFile) await uploadContentFile({ contentId: saved.id, file: pendingFile, userId: user.id });
-      setShowForm(false);
-      setEditing(null);
-      setSelectedContent(null);
-      setSuccess(isEdit ? 'Contenuto aggiornato correttamente.' : 'Contenuto creato correttamente.');
-      await refresh();
-    } catch (err) {
-      setState((current) => ({ ...current, error: err.message }));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const remove = async (content) => {
-    const confirmed = window.confirm(`Eliminare il contenuto "${content.title}"? Questa azione non puo essere annullata.`);
-    if (!confirmed) return;
-    setSuccess('');
-    setState((current) => ({ ...current, error: '' }));
-    try {
-      await deleteContent(content.id);
-      setSelectedContent(null);
-      setSuccess('Contenuto eliminato correttamente.');
-      await refresh();
-    } catch (err) {
-      setState((current) => ({ ...current, error: err.message }));
-    }
-  };
-
-  const duplicate = async (content) => {
-    setSuccess('');
-    setState((current) => ({ ...current, error: '' }));
-    await duplicateContent(content, user.id);
-    setSuccess('Contenuto duplicato correttamente in Idee.');
-    await refresh();
-  };
-
-  const changeStatus = async (id, status) => {
-    setSuccess('');
-    setState((current) => ({ ...current, error: '' }));
-    const updated = await updateContentStatus(id, status);
-    setSelectedContent((current) => current?.id === id ? { ...current, ...updated, status } : current);
-    setSuccess('Stato contenuto aggiornato.');
-    await refresh();
-  };
-
   if (state.loading) return <LoadingState />;
 
   return (
     <div>
       <PageTitle title="Contenuti" description="Archivio contenuti, bozze, stati e approvazioni." action={<button className="btn-primary" onClick={() => { setEditing(null); setShowForm(true); }}><Plus className="h-4 w-4" />Nuovo contenuto</button>} />
-      <ErrorState message={state.error} />
-      <SuccessState message={success} />
+      <ErrorState message={state.error || contentActions.error} />
+      <SuccessState message={contentActions.success} />
       <div className="surface mb-4 grid gap-3 p-4 md:grid-cols-6">
         <label className="relative md:col-span-2">
           <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -142,18 +106,17 @@ export default function ContentsPage() {
           <option value="status">Ordina per stato</option>
         </select>
       </div>
-      {showForm && <div className="mb-6"><ContentForm initialValue={editing} clients={state.clients} saving={saving} userId={user.id} onSubmit={save} onUpload={refresh} onCancel={() => { setShowForm(false); setEditing(null); }} /></div>}
+      {showForm && <div className="mb-6"><ContentForm initialValue={editing} clients={state.clients} saving={contentActions.saving} userId={user.id} onSubmit={contentActions.saveContent} onUpload={refresh} onCancel={() => { setShowForm(false); setEditing(null); }} /></div>}
       {filteredContents.length > 0 ? (
         <ContentsTable
           contents={filteredContents}
-          onOpen={(content) => { setSelectedContent(content); setEditing(null); setShowForm(false); }}
-          onEdit={(content) => { setSelectedContent(content); setEditing(null); setShowForm(false); }}
-          onDelete={remove}
+          onOpen={(content) => { contentActions.openContentDetail(content); setEditing(null); setShowForm(false); }}
+          onEdit={(content) => { contentActions.openContentDetail(content); setEditing(null); setShowForm(false); }}
+          onDelete={contentActions.deleteContent}
           onStatusChange={async (id, status) => {
-            setSuccess('');
             setState((current) => ({ ...current, error: '' }));
             try {
-              await changeStatus(id, status);
+              await contentActions.changeContentStatus(id, status);
             } catch (err) {
               setState((current) => ({ ...current, error: err.message }));
             }
@@ -163,16 +126,16 @@ export default function ContentsPage() {
         <EmptyState title="Nessun contenuto trovato" description={state.contents.length === 0 ? 'Crea un contenuto e collegalo a un cliente.' : 'Prova a modificare ricerca o filtri.'} />
       )}
       <ContentDetailModal
-        content={selectedContent}
+        content={contentActions.selectedContent}
         clients={state.clients}
-        saving={saving}
+        saving={contentActions.saving}
         userId={user.id}
-        onClose={() => { setSelectedContent(null); setSearchParams({}); }}
-        onSubmit={save}
+        onClose={() => { contentActions.closeContentDetail(); setSearchParams({}); }}
+        onSubmit={contentActions.saveContent}
         onUpload={refresh}
-        onDuplicate={duplicate}
-        onStatusChange={changeStatus}
-        onDelete={remove}
+        onDuplicate={contentActions.duplicateContent}
+        onStatusChange={contentActions.changeContentStatus}
+        onDelete={contentActions.deleteContent}
       />
     </div>
   );

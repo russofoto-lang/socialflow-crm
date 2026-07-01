@@ -13,6 +13,7 @@
 - Aggiungere ordinamenti nelle tabelle.
 - Valutare filtri rapidi piu evoluti nella scheda cliente se il numero di contenuti cresce molto.
 - Valutare una vista agenda settimanale se il calendario mensile contiene molti contenuti per giorno.
+- Estendere gradualmente `useContentActions()` con update ottimistici, evitando refresh completi dopo ogni mutazione.
 
 ## Bassa
 - Preparare template PDF piano editoriale.

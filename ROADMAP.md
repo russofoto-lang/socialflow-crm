@@ -81,6 +81,9 @@ Rendere la gestione clienti piu utile per l'Admin con statistiche operative e ar
 
 ## v0.4 Approvazioni contenuti
 
+### Nota tecnica v0.4.1
+Prima delle nuove funzioni approvative e' stata completata una release tecnica per ridurre la duplicazione delle azioni contenuto tramite `useContentActions()`, senza modificare UX, schema o sicurezza.
+
 ### Obiettivo
 Formalizzare il ciclo di approvazione cliente in modo affidabile e tracciabile.
 

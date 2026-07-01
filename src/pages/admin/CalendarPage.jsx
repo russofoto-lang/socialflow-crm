@@ -11,7 +11,8 @@ import LoadingState from '../../components/ui/LoadingState.jsx';
 import PageTitle from '../../components/ui/PageTitle.jsx';
 import SuccessState from '../../components/ui/SuccessState.jsx';
 import { useAuth } from '../../contexts/AuthContext.jsx';
-import { deleteContent, duplicateContent, listClients, listContents, updateContentStatus, uploadContentFile, upsertContent } from '../../lib/crmApi';
+import useContentActions from '../../hooks/useContentActions';
+import { listClients, listContents, upsertContent } from '../../lib/crmApi';
 import { statusOptions } from '../../lib/options';
 import { formatDate, toDateKey } from '../../utils/date';
 
@@ -41,10 +42,7 @@ export default function CalendarPage() {
   const [state, setState] = useState({ clients: [], contents: [], loading: true, error: '' });
   const [filters, setFilters] = useState({});
   const [formContent, setFormContent] = useState(null);
-  const [selectedContent, setSelectedContent] = useState(null);
   const [selectedDate, setSelectedDate] = useState(toDateKey(new Date()));
-  const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState('');
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const refresh = () => Promise.all([listClients(), listContents(filters)])
@@ -52,6 +50,19 @@ export default function CalendarPage() {
     .catch((err) => setState((current) => ({ ...current, loading: false, error: err.message })));
 
   useEffect(() => { refresh(); }, [filters]);
+
+  const contentActions = useContentActions({
+    userId: user.id,
+    refresh,
+    messages: {
+      saveEdit: 'Contenuto aggiornato dal calendario.',
+      saveCreate: 'Contenuto creato dal calendario.',
+      delete: 'Contenuto eliminato dal calendario.',
+      duplicate: 'Contenuto duplicato in Idee.',
+      status: 'Stato contenuto aggiornato.'
+    },
+    onAfterSave: () => setFormContent(null)
+  });
 
   const scheduledContents = useMemo(
     () => [...state.contents].filter((content) => content.scheduled_date).sort((a, b) => new Date(a.scheduled_date) - new Date(b.scheduled_date)),
@@ -72,66 +83,6 @@ export default function CalendarPage() {
     [scheduledContents, selectedDate]
   );
 
-  const save = async (payload) => {
-    setSaving(true);
-    setSuccess('');
-    setState((current) => ({ ...current, error: '' }));
-    try {
-      const isEdit = Boolean(payload.id);
-      const { pendingFile, ...contentPayload } = payload;
-      const saved = await upsertContent({ ...contentPayload, created_by: contentPayload.created_by ?? user.id });
-      if (pendingFile) await uploadContentFile({ contentId: saved.id, file: pendingFile, userId: user.id });
-      setFormContent(null);
-      setSelectedContent((current) => current?.id === saved.id ? { ...current, ...saved } : current);
-      setSuccess(isEdit ? 'Contenuto aggiornato dal calendario.' : 'Contenuto creato dal calendario.');
-      await refresh();
-    } catch (err) {
-      setState((current) => ({ ...current, error: err.message }));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const remove = async (content) => {
-    const confirmed = window.confirm(`Eliminare il contenuto "${content.title}"? Questa azione non puo essere annullata.`);
-    if (!confirmed) return;
-    setSuccess('');
-    setState((current) => ({ ...current, error: '' }));
-    try {
-      await deleteContent(content.id);
-      setSelectedContent(null);
-      setSuccess('Contenuto eliminato dal calendario.');
-      await refresh();
-    } catch (err) {
-      setState((current) => ({ ...current, error: err.message }));
-    }
-  };
-
-  const duplicate = async (content) => {
-    setSuccess('');
-    setState((current) => ({ ...current, error: '' }));
-    try {
-      await duplicateContent(content, user.id);
-      setSuccess('Contenuto duplicato in Idee.');
-      await refresh();
-    } catch (err) {
-      setState((current) => ({ ...current, error: err.message }));
-    }
-  };
-
-  const changeStatus = async (id, status) => {
-    setSuccess('');
-    setState((current) => ({ ...current, error: '' }));
-    try {
-      const updated = await updateContentStatus(id, status);
-      setSelectedContent((current) => current?.id === id ? { ...current, ...updated, status } : current);
-      setSuccess('Stato contenuto aggiornato.');
-      await refresh();
-    } catch (err) {
-      setState((current) => ({ ...current, error: err.message }));
-    }
-  };
-
   const selectToday = () => {
     const today = new Date();
     setCurrentMonth(today);
@@ -149,7 +100,7 @@ export default function CalendarPage() {
   };
 
   const openContent = (content) => {
-    setSelectedContent(content);
+    contentActions.openContentDetail(content);
     setFormContent(null);
     if (content.scheduled_date) setSelectedDate(content.scheduled_date);
   };
@@ -160,7 +111,7 @@ export default function CalendarPage() {
       return;
     }
 
-    setSuccess('');
+    contentActions.setSuccess('');
     setState((current) => ({ ...current, error: '' }));
     try {
       const oldDateLabel = formatDate(content.scheduled_date);
@@ -182,8 +133,8 @@ export default function CalendarPage() {
         created_by: content.created_by ?? user.id
       });
       setSelectedDate(targetDate);
-      setSelectedContent((current) => current?.id === content.id ? { ...current, ...updated, internal_notes: updatedNotes, scheduled_date: targetDate } : current);
-      setSuccess(`Contenuto spostato al ${newDateLabel}.`);
+      contentActions.setSelectedContent((current) => current?.id === content.id ? { ...current, ...updated, internal_notes: updatedNotes, scheduled_date: targetDate } : current);
+      contentActions.setSuccess(`Contenuto spostato al ${newDateLabel}.`);
       await refresh();
     } catch (err) {
       setState((current) => ({ ...current, error: err.message }));
@@ -195,8 +146,8 @@ export default function CalendarPage() {
   return (
     <div>
       <PageTitle title="Calendario editoriale" description="Pianificazione mensile dei contenuti social." />
-      <ErrorState message={state.error} />
-      <SuccessState message={success} />
+      <ErrorState message={state.error || contentActions.error} />
+      <SuccessState message={contentActions.success} />
 
       <div className="surface mb-4 grid gap-4 p-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -288,22 +239,22 @@ export default function CalendarPage() {
       <ContentFormModal
         initialValue={formContent}
         clients={state.clients}
-        saving={saving}
+        saving={contentActions.saving}
         userId={user.id}
-        onSubmit={save}
+        onSubmit={contentActions.saveContent}
         onCancel={() => setFormContent(null)}
       />
       <ContentDetailModal
-        content={selectedContent}
+        content={contentActions.selectedContent}
         clients={state.clients}
-        saving={saving}
+        saving={contentActions.saving}
         userId={user.id}
-        onClose={() => setSelectedContent(null)}
-        onSubmit={save}
+        onClose={contentActions.closeContentDetail}
+        onSubmit={contentActions.saveContent}
         onUpload={refresh}
-        onDuplicate={duplicate}
-        onStatusChange={changeStatus}
-        onDelete={remove}
+        onDuplicate={contentActions.duplicateContent}
+        onStatusChange={contentActions.changeContentStatus}
+        onDelete={contentActions.deleteContent}
       />
     </div>
   );

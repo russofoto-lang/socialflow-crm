@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.4.1 - Hook azioni contenuto
+
+### Migliorato
+- Aggiunto hook riutilizzabile `useContentActions()` per centralizzare apertura dettaglio contenuto e azioni CRUD principali.
+- Ridotta duplicazione tra Dashboard, Contenuti, Board e Calendario.
+- Centralizzati `selectedContent`, `saveContent`, `deleteContent`, `duplicateContent`, `changeContentStatus`, `saving`, `error` e `success` dove compatibile.
+- Mantenuto invariato il comportamento utente delle pagine admin.
+
+### Stabilizzato
+- Nessuna modifica a schema Supabase, migration, RLS o sicurezza.
+- Lasciata locale la logica specifica del calendario per drag & drop con nota interna automatica.
+
 ## v0.3.3 - Social cliente e descrizione attivita
 
 ### Aggiunto

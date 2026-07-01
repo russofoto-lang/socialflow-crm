@@ -10,14 +10,13 @@ import LoadingState from '../../components/ui/LoadingState.jsx';
 import PageTitle from '../../components/ui/PageTitle.jsx';
 import StatCard from '../../components/ui/StatCard.jsx';
 import { useAuth } from '../../contexts/AuthContext.jsx';
-import { deleteContent, duplicateContent, listClients, listContents, updateContentStatus, upsertContent } from '../../lib/crmApi';
+import useContentActions from '../../hooks/useContentActions';
+import { listClients, listContents } from '../../lib/crmApi';
 import { formatDate } from '../../utils/date';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
   const [state, setState] = useState({ clients: [], contents: [], loading: true, error: '' });
-  const [selectedContent, setSelectedContent] = useState(null);
-  const [saving, setSaving] = useState(false);
 
   const refresh = () => (
     Promise.all([listClients(), listContents()])
@@ -26,6 +25,8 @@ export default function AdminDashboard() {
   );
 
   useEffect(() => { refresh(); }, []);
+
+  const contentActions = useContentActions({ userId: user.id, refresh });
 
   if (state.loading) return <LoadingState />;
 
@@ -38,58 +39,10 @@ export default function AdminDashboard() {
   const latestContents = [...state.contents].sort((a, b) => new Date(b.created_at ?? 0) - new Date(a.created_at ?? 0)).slice(0, 6);
   const upcomingContents = [...scheduledThisWeek].sort((a, b) => new Date(a.scheduled_date) - new Date(b.scheduled_date)).slice(0, 6);
 
-  const save = async (payload) => {
-    setSaving(true);
-    setState((current) => ({ ...current, error: '' }));
-    try {
-      const saved = await upsertContent({ ...payload, created_by: payload.created_by ?? user.id });
-      setSelectedContent((current) => current?.id === saved.id ? { ...current, ...saved } : current);
-      await refresh();
-    } catch (err) {
-      setState((current) => ({ ...current, error: err.message }));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const remove = async (content) => {
-    const confirmed = window.confirm(`Eliminare il contenuto "${content.title}"? Questa azione non puo essere annullata.`);
-    if (!confirmed) return;
-    setState((current) => ({ ...current, error: '' }));
-    try {
-      await deleteContent(content.id);
-      setSelectedContent(null);
-      await refresh();
-    } catch (err) {
-      setState((current) => ({ ...current, error: err.message }));
-    }
-  };
-
-  const duplicate = async (content) => {
-    setState((current) => ({ ...current, error: '' }));
-    try {
-      await duplicateContent(content, user.id);
-      await refresh();
-    } catch (err) {
-      setState((current) => ({ ...current, error: err.message }));
-    }
-  };
-
-  const changeStatus = async (id, status) => {
-    setState((current) => ({ ...current, error: '' }));
-    try {
-      const updated = await updateContentStatus(id, status);
-      setSelectedContent((current) => current?.id === id ? { ...current, ...updated, status } : current);
-      await refresh();
-    } catch (err) {
-      setState((current) => ({ ...current, error: err.message }));
-    }
-  };
-
   return (
     <div>
       <PageTitle title="Dashboard Admin" description="Il pannello quotidiano per capire cosa richiede attenzione, cosa e in lavorazione e cosa sta per andare online." />
-      <ErrorState message={state.error} />
+      <ErrorState message={state.error || contentActions.error} />
       <section className="surface mb-6 p-5">
         <p className="text-sm font-semibold text-muted">Riepilogo operativo</p>
         <p className="mt-2 text-xl font-black">
@@ -124,7 +77,7 @@ export default function AdminDashboard() {
           </div>
           <div className="grid gap-3">
             {latestContents.map((content) => (
-              <button key={content.id} className="premium-card flex flex-col gap-3 p-3 text-left transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-soft sm:flex-row sm:items-center sm:justify-between" onClick={() => setSelectedContent(content)}>
+              <button key={content.id} className="premium-card flex flex-col gap-3 p-3 text-left transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-soft sm:flex-row sm:items-center sm:justify-between" onClick={() => contentActions.openContentDetail(content)}>
                 <div className="flex min-w-0 gap-3">
                   <ContentPreview content={content} compact />
                   <div className="min-w-0">
@@ -178,16 +131,16 @@ export default function AdminDashboard() {
         {upcomingContents.length === 0 && <EmptyState title="Nessun contenuto programmato" description="I contenuti con data prevista nei prossimi giorni compariranno qui." />}
       </section>
       <ContentDetailModal
-        content={selectedContent}
+        content={contentActions.selectedContent}
         clients={state.clients}
-        saving={saving}
+        saving={contentActions.saving}
         userId={user.id}
-        onClose={() => setSelectedContent(null)}
-        onSubmit={save}
+        onClose={contentActions.closeContentDetail}
+        onSubmit={contentActions.saveContent}
         onUpload={refresh}
-        onDuplicate={duplicate}
-        onStatusChange={changeStatus}
-        onDelete={remove}
+        onDuplicate={contentActions.duplicateContent}
+        onStatusChange={contentActions.changeContentStatus}
+        onDelete={contentActions.deleteContent}
       />
     </div>
   );
