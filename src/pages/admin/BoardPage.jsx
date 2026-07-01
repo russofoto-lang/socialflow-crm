@@ -33,6 +33,11 @@ export default function BoardPage() {
 
   useEffect(() => { refresh(); }, []);
 
+  const visibleContents = useMemo(
+    () => clientFilter ? contents.filter((content) => content.client_id === clientFilter) : contents,
+    [contents, clientFilter]
+  );
+
   useEffect(() => {
     const updateScrollbarWidth = () => {
       const element = boardScrollRef.current;
@@ -42,11 +47,6 @@ export default function BoardPage() {
     window.addEventListener('resize', updateScrollbarWidth);
     return () => window.removeEventListener('resize', updateScrollbarWidth);
   }, [visibleContents]);
-
-  const visibleContents = useMemo(
-    () => clientFilter ? contents.filter((content) => content.client_id === clientFilter) : contents,
-    [contents, clientFilter]
-  );
 
   const save = async (payload) => {
     setSaving(true);
