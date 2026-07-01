@@ -19,6 +19,7 @@ export default function ContentsPage() {
   const [state, setState] = useState({ clients: [], contents: [], loading: true, error: '' });
   const [filters, setFilters] = useState({});
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('date_asc');
   const [editing, setEditing] = useState(null);
   const [selectedContent, setSelectedContent] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -51,11 +52,18 @@ export default function ContentsPage() {
 
   const filteredContents = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return state.contents;
-    return state.contents.filter((content) =>
+    const filtered = query ? state.contents.filter((content) =>
       [content.title, content.copy_text].some((value) => value?.toLowerCase().includes(query))
-    );
-  }, [state.contents, search]);
+    ) : state.contents;
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'date_desc') return new Date(b.scheduled_date ?? 0) - new Date(a.scheduled_date ?? 0);
+      if (sortBy === 'platform') return (a.platform ?? '').localeCompare(b.platform ?? '');
+      if (sortBy === 'type') return (a.content_type ?? '').localeCompare(b.content_type ?? '');
+      if (sortBy === 'status') return (a.status ?? '').localeCompare(b.status ?? '');
+      return new Date(a.scheduled_date ?? '9999-12-31') - new Date(b.scheduled_date ?? '9999-12-31');
+    });
+  }, [state.contents, search, sortBy]);
 
   const save = async (payload) => {
     setSaving(true);
@@ -126,6 +134,13 @@ export default function ContentsPage() {
         <select className="form-input" value={filters.content_type ?? ''} onChange={(e) => setFilters((f) => ({ ...f, content_type: e.target.value || undefined }))}><option value="">Tutti i tipi</option>{contentTypeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
         <select className="form-input" value={filters.platform ?? ''} onChange={(e) => setFilters((f) => ({ ...f, platform: e.target.value || undefined }))}><option value="">Tutte le piattaforme</option>{platformOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
         <input className="form-input md:col-span-2" type="date" value={filters.scheduled_date ?? ''} onChange={(e) => setFilters((f) => ({ ...f, scheduled_date: e.target.value || undefined }))} />
+        <select className="form-input md:col-span-2" value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
+          <option value="date_asc">Ordina per data: piu vicini prima</option>
+          <option value="date_desc">Ordina per data: piu lontani prima</option>
+          <option value="platform">Ordina per piattaforma</option>
+          <option value="type">Ordina per tipo</option>
+          <option value="status">Ordina per stato</option>
+        </select>
       </div>
       {showForm && <div className="mb-6"><ContentForm initialValue={editing} clients={state.clients} saving={saving} userId={user.id} onSubmit={save} onUpload={refresh} onCancel={() => { setShowForm(false); setEditing(null); }} /></div>}
       {filteredContents.length > 0 ? (

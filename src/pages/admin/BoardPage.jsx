@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import BoardColumn from '../../components/board/BoardColumn.jsx';
 import ContentDetailModal from '../../components/contents/ContentDetailModal.jsx';
 import ErrorState from '../../components/ui/ErrorState.jsx';
@@ -19,6 +19,9 @@ export default function BoardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const boardScrollRef = useRef(null);
+  const scrollbarRef = useRef(null);
+  const [scrollbarWidth, setScrollbarWidth] = useState(0);
 
   const refresh = () => Promise.all([listContents(), listClients()])
     .then(([nextContents, nextClients]) => {
@@ -29,6 +32,16 @@ export default function BoardPage() {
     .finally(() => setLoading(false));
 
   useEffect(() => { refresh(); }, []);
+
+  useEffect(() => {
+    const updateScrollbarWidth = () => {
+      const element = boardScrollRef.current;
+      if (element) setScrollbarWidth(element.scrollWidth);
+    };
+    updateScrollbarWidth();
+    window.addEventListener('resize', updateScrollbarWidth);
+    return () => window.removeEventListener('resize', updateScrollbarWidth);
+  }, [visibleContents]);
 
   const visibleContents = useMemo(
     () => clientFilter ? contents.filter((content) => content.client_id === clientFilter) : contents,
@@ -91,6 +104,14 @@ export default function BoardPage() {
     }
   };
 
+  const syncBoardScroll = (event) => {
+    if (scrollbarRef.current) scrollbarRef.current.scrollLeft = event.currentTarget.scrollLeft;
+  };
+
+  const syncScrollbar = (event) => {
+    if (boardScrollRef.current) boardScrollRef.current.scrollLeft = event.currentTarget.scrollLeft;
+  };
+
   if (loading) return <LoadingState />;
 
   return (
@@ -108,7 +129,7 @@ export default function BoardPage() {
           {clients.map((client) => <option key={client.id} value={client.id}>{client.name}</option>)}
         </select>
       </div>
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div ref={boardScrollRef} className="flex gap-4 overflow-x-auto pb-4" onScroll={syncBoardScroll}>
         {statusOptions.map((status) => (
           <BoardColumn
             key={status.value}
@@ -118,6 +139,9 @@ export default function BoardPage() {
             onStatusChange={changeStatus}
           />
         ))}
+      </div>
+      <div ref={scrollbarRef} className="sticky bottom-0 z-20 mt-2 overflow-x-auto rounded-lg border border-line bg-white/95 p-1 shadow-soft backdrop-blur" onScroll={syncScrollbar}>
+        <div style={{ width: `${scrollbarWidth}px`, height: 1 }} />
       </div>
       <ContentDetailModal
         content={selectedContent}
