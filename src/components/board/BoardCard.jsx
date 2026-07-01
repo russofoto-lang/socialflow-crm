@@ -6,9 +6,14 @@ import Badge from '../ui/Badge.jsx';
 export default function BoardCard({ content, onOpen, onStatusChange }) {
   return (
     <article
-      className="premium-card cursor-pointer p-3 transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-soft"
+      className="premium-card cursor-grab p-3 transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-soft active:cursor-grabbing"
+      draggable
       role="button"
       tabIndex={0}
+      onDragStart={(event) => {
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', content.id);
+      }}
       onClick={() => onOpen?.(content)}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {

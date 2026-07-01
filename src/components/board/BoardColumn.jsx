@@ -1,9 +1,27 @@
 import { Inbox } from 'lucide-react';
+import { useState } from 'react';
 import BoardCard from './BoardCard.jsx';
 
-export default function BoardColumn({ title, contents, onOpen, onStatusChange }) {
+export default function BoardColumn({ title, status, contents, onOpen, onStatusChange }) {
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    setIsDragOver(false);
+    const contentId = event.dataTransfer.getData('text/plain');
+    if (contentId) onStatusChange?.(contentId, status);
+  };
+
   return (
-    <section className="min-w-[18.5rem] flex-1 rounded-xl border border-line bg-slate-100/80 p-3 shadow-sm">
+    <section
+      className={`min-w-[18.5rem] flex-1 rounded-xl border p-3 shadow-sm transition ${isDragOver ? 'border-brand-400 bg-brand-50' : 'border-line bg-slate-100/80'}`}
+      onDragOver={(event) => {
+        event.preventDefault();
+        setIsDragOver(true);
+      }}
+      onDragLeave={() => setIsDragOver(false)}
+      onDrop={handleDrop}
+    >
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-black">{title}</h2>
         <span className="rounded-md bg-white px-2.5 py-1 text-xs font-black text-muted ring-1 ring-line">{contents.length}</span>

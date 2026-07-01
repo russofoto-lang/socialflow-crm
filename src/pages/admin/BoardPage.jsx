@@ -134,6 +134,7 @@ export default function BoardPage() {
           <BoardColumn
             key={status.value}
             title={status.label}
+            status={status.value}
             contents={visibleContents.filter((content) => content.status === status.value)}
             onOpen={setSelectedContent}
             onStatusChange={changeStatus}
