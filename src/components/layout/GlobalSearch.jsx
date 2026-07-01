@@ -2,6 +2,7 @@ import { Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { listClients, listContents } from '../../lib/crmApi';
+import { normalizeContacts, normalizeSocialLinks, primaryContact } from '../../utils/contacts';
 import { formatDate } from '../../utils/date';
 import Badge from '../ui/Badge.jsx';
 
@@ -30,9 +31,11 @@ export default function GlobalSearch() {
     if (value.length < 2) return { clients: [], contents: [] };
 
     return {
-      clients: clients.filter((client) =>
-        [client.name, client.contact_name, client.email].some((field) => field?.toLowerCase().includes(value))
-      ).slice(0, 5),
+      clients: clients.filter((client) => {
+        const contactValues = normalizeContacts(client).flatMap((contact) => [contact.name, contact.role, contact.email, contact.phone]);
+        const socialValues = normalizeSocialLinks(client).flatMap((item) => [item.brand, item.platform, item.url]);
+        return [client.name, client.contact_name, client.email, client.phone, client.website, client.business_description, client.managed_brands, ...contactValues, ...socialValues].some((field) => field?.toLowerCase().includes(value));
+      }).slice(0, 5),
       contents: contents.filter((content) =>
         [content.title, content.copy_text, content.internal_notes].some((field) => field?.toLowerCase().includes(value))
       ).slice(0, 6)
@@ -82,7 +85,7 @@ export default function GlobalSearch() {
                       <div>
                         <p className="text-sm font-black">{client.name}</p>
                         <p className="text-xs text-muted">
-                          {client.contact_name || 'Referente non indicato'} - {client.email || 'Email non indicata'}
+                          {primaryContact(client)?.name || 'Referente non indicato'} - {primaryContact(client)?.email || client.website || 'Contatto non indicato'}
                           {client.status === 'inactive' ? ' - Archiviato' : ''}
                         </p>
                       </div>

@@ -8,6 +8,7 @@ import LoadingState from '../../components/ui/LoadingState.jsx';
 import PageTitle from '../../components/ui/PageTitle.jsx';
 import SuccessState from '../../components/ui/SuccessState.jsx';
 import { deleteClient, listClients, updateClientStatus, upsertClient } from '../../lib/crmApi';
+import { normalizeContacts, normalizeSocialLinks } from '../../utils/contacts';
 
 export default function ClientsPage() {
   const [clients, setClients] = useState([]);
@@ -27,9 +28,11 @@ export default function ClientsPage() {
     const query = search.trim().toLowerCase();
     const visibleByStatus = showArchived ? clients : clients.filter((client) => client.status !== 'inactive');
     if (!query) return visibleByStatus;
-    return visibleByStatus.filter((client) =>
-      [client.name, client.contact_name, client.email].some((value) => value?.toLowerCase().includes(query))
-    );
+    return visibleByStatus.filter((client) => {
+      const contactValues = normalizeContacts(client).flatMap((contact) => [contact.name, contact.role, contact.email, contact.phone]);
+      const socialValues = normalizeSocialLinks(client).flatMap((item) => [item.brand, item.platform, item.url]);
+      return [client.name, client.contact_name, client.email, client.phone, client.website, client.business_description, client.managed_brands, ...contactValues, ...socialValues].some((value) => value?.toLowerCase().includes(query));
+    });
   }, [clients, search, showArchived]);
 
   const save = async (payload) => {

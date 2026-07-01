@@ -2,6 +2,7 @@ import { Archive, RotateCcw } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Badge from '../../components/ui/Badge.jsx';
+import { EmailLink, PhoneActions, WebsiteLink } from '../../components/ui/ContactActions.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
 import ErrorState from '../../components/ui/ErrorState.jsx';
 import LoadingState from '../../components/ui/LoadingState.jsx';
@@ -10,6 +11,7 @@ import StatCard from '../../components/ui/StatCard.jsx';
 import SuccessState from '../../components/ui/SuccessState.jsx';
 import { listClients, listContents, updateClientStatus } from '../../lib/crmApi';
 import { contentTypeOptions, labelFor, platformOptions, statusOptions } from '../../lib/options';
+import { normalizeContacts, normalizeSocialLinks, websiteUrl } from '../../utils/contacts';
 import { formatDate } from '../../utils/date';
 
 function addDays(date, days) {
@@ -91,6 +93,8 @@ export default function ClientDetailPage() {
 
   const isArchived = state.client.status === 'inactive';
   const brandVoice = state.client.brand_voice || state.client.brandVoice;
+  const contacts = normalizeContacts(state.client);
+  const socialLinks = normalizeSocialLinks(state.client);
 
   return (
     <div>
@@ -108,11 +112,47 @@ export default function ClientDetailPage() {
       <SuccessState message={success} />
 
       <section className="grid gap-4 rounded-md border border-line bg-white p-5 shadow-sm md:grid-cols-2">
-        <div><p className="text-sm text-muted">Referente</p><p className="font-semibold">{state.client.contact_name || '-'}</p></div>
+        <div><p className="text-sm text-muted">Sito internet</p><WebsiteLink website={state.client.website} /></div>
         <div><p className="text-sm text-muted">Stato</p><Badge value={state.client.status} /></div>
-        <div><p className="text-sm text-muted">Email</p><p className="font-semibold">{state.client.email || '-'}</p></div>
-        <div><p className="text-sm text-muted">Telefono</p><p className="font-semibold">{state.client.phone || '-'}</p></div>
-        <div className="md:col-span-2"><p className="text-sm text-muted">Brand/social gestiti</p><p className="font-semibold">{state.client.managed_brands || '-'}</p></div>
+        <div className="md:col-span-2">
+          <p className="text-sm text-muted">Referenti</p>
+          {contacts.length > 0 ? (
+            <div className="mt-2 grid gap-3 md:grid-cols-2">
+              {contacts.map((contact, index) => (
+                <div key={index} className="rounded-lg border border-line bg-slate-50 p-3">
+                  <p className="font-semibold">{contact.name || `Referente ${index + 1}`}</p>
+                  {contact.role && <p className="mt-1 text-xs font-semibold text-muted">{contact.role}</p>}
+                  <div className="mt-3 grid gap-2 text-sm">
+                    <EmailLink email={contact.email} />
+                    <PhoneActions phone={contact.phone} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="font-semibold">-</p>
+          )}
+        </div>
+        <div className="md:col-span-2">
+          <p className="text-sm text-muted">Di cosa si occupa</p>
+          <p className="whitespace-pre-wrap font-semibold">{state.client.business_description || '-'}</p>
+        </div>
+        <div className="md:col-span-2">
+          <p className="text-sm text-muted">Brand/social gestiti</p>
+          {socialLinks.length > 0 ? (
+            <div className="mt-2 grid gap-2 md:grid-cols-2">
+              {socialLinks.map((item, index) => (
+                <div key={index} className="rounded-lg border border-line bg-slate-50 p-3">
+                  <p className="font-semibold">{item.brand || item.platform || `Social ${index + 1}`}</p>
+                  {item.platform && <p className="mt-1 text-xs font-semibold text-muted">{item.platform}</p>}
+                  {item.url && <a className="mt-2 inline-flex text-sm font-bold text-brand-700 hover:underline" href={websiteUrl(item.url)} target="_blank" rel="noreferrer">{item.url}</a>}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="font-semibold">{state.client.managed_brands || '-'}</p>
+          )}
+        </div>
         {brandVoice && <div className="md:col-span-2"><p className="text-sm text-muted">Brand voice</p><p>{brandVoice}</p></div>}
         <div className="md:col-span-2"><p className="text-sm text-muted">Note interne</p><p>{state.client.notes || '-'}</p></div>
       </section>

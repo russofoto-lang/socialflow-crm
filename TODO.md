@@ -24,7 +24,6 @@
 ## Futuro
 - AI Assistant per idee e copy.
 - Export PDF avanzato.
-- Drag and drop nella board.
 - Notifiche email.
 - Integrazioni Meta/Instagram.
 - Pubblicazione automatica sui social.

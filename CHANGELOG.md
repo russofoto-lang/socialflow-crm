@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.3.3 - Social cliente e descrizione attivita
+
+### Aggiunto
+- Campo "Di cosa si occupa il cliente" nella scheda cliente.
+- Gestione strutturata dei brand/social con brand, piattaforma e link.
+- Link social cliccabili in lista clienti e scheda cliente.
+- Migration `003_client_business_and_socials.sql` con `business_description` e `social_links`.
+
+### Migliorato
+- Ricerca clienti estesa a descrizione attivita e link social.
+- Compatibilita mantenuta con il vecchio campo `managed_brands`.
+
+## v0.3.2 - Referenti multipli e contatti cliccabili
+
+### Aggiunto
+- Campo sito internet nella scheda cliente.
+- Referenti multipli per cliente con nome, ruolo, email e telefono.
+- Email cliccabili con link `mailto:`.
+- Telefoni cliccabili con azioni rapide "Chiama" e "WhatsApp".
+- Migration `002_client_contacts.sql` con campi `website` e `contacts`.
+
+### Migliorato
+- Lista clienti e scheda cliente mostrano contatti piu completi.
+- Ricerca clienti estesa a sito, telefono, email e referenti multipli.
+- Compatibilita mantenuta con i vecchi campi `contact_name`, `email` e `phone`.
+
 ## v0.3.1 - Calendario editoriale compatto
 
 ### Migliorato
